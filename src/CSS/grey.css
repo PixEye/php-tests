@@ -1,0 +1,51 @@
+BODY { background:#ddd; color:#000; margin:0; }
+H2, H3, H4, P, DIV, TH, TD { font-family:sans-serif; }
+P, DIV, TH, TD { font-size:10px; }
+P { text-align:justify; text-indent:20px; }
+LI { font-size:12px; }
+
+H1 { background:#ccc; color:#000; text-align:center;
+  border-top:solid 2px #fff; border-bottom:solid 1px #000;
+  padding:5px; font-family:serif; margin:5px 0 10px 0; }
+H2 { text-align:center; }
+H4 { margin:10px 40px; }
+
+IMG { border:0; }
+A { text-decoration:none; font-weight:bold; }
+A:link { background:transparent; color:#00a; }
+A:visited { background:transparent; color:#558; }
+A:hover { background:#eee; color:#008; text-decoration:underline; }
+
+TABLE { border-collapse:collapse; }
+
+acronym, abbr { cursor:help; }
+TT { background:#FFB; color:#000; }
+
+.center { text-align:center; }
+.right, .foot { text-align:right; }
+.w30p { width:30%; }
+.w40p { width:40%; text-align:center; }
+#floatcolumn { float:right; margin:0; padding:0 20px; width:330px; }
+.box, .leftBox { margin:10px 0; padding:10px; border:dashed 2px #ccc; }
+.leftBox { float:left; margin-left:10px; text-align:left; }
+.margin, H3, HR, P, PRE, #W3Cbuttons, .foot, .em, #main
+  { margin-left:20px; margin-right:20px; }
+LI { margin-left:50px; margin-right:50px; }
+SMALL, .foot { font-size:10px; }
+.foot { border-top:solid 1px black; }
+
+#W3Cbuttons { float:left; }
+/* rv stands for Reverse Video: */
+STRONG, .rv { background:#000; color:#fff;
+  padding:0 3px; font-weight:bold; }
+
+.surligne, .local { background:#ff0; color:#000; }
+.em { background:#eee; color:#880; }
+.warning { margin-top:20px; text-align:center; font-size:10px;
+  padding-left:3px; padding-right:3px; font-weight:bold; }
+.success { background:#ddd; color:#080; margin-top:20px;
+  text-align:center; padding:0 3px; font-size:12px; }
+.error { background:#800; color:White; margin-top:20px;
+  text-align:center; padding:0 3px; font-weight:bold; font-size:12px; }
+.EndBar { background:#c13; color:#eee;
+  padding:3px 10px 0 10px; margin:0; vertical-align:middle; }

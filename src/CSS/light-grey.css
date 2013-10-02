@@ -1,0 +1,91 @@
+/**
+ * Created by Julien Moreau aka PixEye
+ *
+ * Last commit of this file:
+ * $Id$
+ */
+
+html, body { background:#fff; color:#000; margin:0; overflow:auto; }
+body { padding-bottom:15px; }
+h1 { background:#ddd; color:#000; text-align:center; padding:5px;
+  font-family:serif; font-style:italic;
+  border-bottom:solid 1px #000; margin:0; }
+h1 { font-size:28px; }
+h2 { font-size:22px; background:#fff; color:#555; font-style:italic; }
+h3 { font-size:20px; }
+h4 { font-size:16px; margin:10px 40px; }
+h5 { font-size:14px; }
+h6 { font-size:12px; }
+h2, h3, h4, p, div, th, td { font-family:sans-serif; }
+p, div, th, td, li, input, select, option { font-size:11px; }
+p { text-align:justify; text-indent:20px; }
+
+code, pre, tt, textarea, .monospace { font-family:monospace; font-size:12px; }
+code, pre { background:#000; color:#ffb; padding:5px 9px; margin-top:10px; display:block; }
+code .discreet, pre .discreet { background:#000; color:#888; }
+code a, pre a { background:#000; color:#88f; }
+code, pre , textarea { overflow:auto; }
+
+img { border:0; }
+a { text-decoration:none; font-weight:bold; }
+a { background:transparent; color:#00a; }
+/* a:visited { background:transparent; color:#558; } */
+a:hover { background:#fff; color:#008; text-decoration:underline; }
+
+#main { padding:10px 20px; }
+#source { margin-bottom:16px; }
+
+table { border-collapse:collapse; }
+th, td { padding:2px 4px; }
+#tabOffres { border:solid 2px #000; }
+#tabOffres td, #tabOffres th, .bordered { border:solid 1px #888; }
+th, label:hover { background:#ccc; color:#000 }
+label { padding:3px; }
+
+.center { text-align:center; margin:0 auto;; }
+.right, .number, #foot { text-align:right; }
+.left { text-align:left; }
+.w30p { width:30%; }
+.w40p { width:40%; text-align:center; }
+#floatcolumn, .floatBox { float:right; margin:0; padding:0 10px; }
+#floatcolumn { width:330px; }
+.box, .leftBox, .rightBox { margin:10px 0; padding:10px; border:dashed 2px #ccc; }
+.leftBox { float:left; margin-left:10px; text-align:left; }
+.rightBox { position:absolute; right:10px; text-align:left; }
+body .rightBox { position:fixed; }
+.margin, h3, hr, p, #W3Cbuttons, .em
+  { margin-left:20px; margin-right:20px; }
+li { margin-left:50px; margin-right:50px; }
+small, #foot { font-size:10px; }
+#foot { border-top:solid 1px #888; padding:0 5px; margin:0;
+	position:absolute; bottom:0; right:0;
+	background:rgba(255, 255, 255, 0.5); color:#bbb; }
+body #foot { position:fixed; }
+
+#W3Cbuttons { float:left; }
+/* rv stands for Reverse Video: */
+STRONG, .rv, .title { padding:0 3px; font-weight:bold; font-size:larger; }
+.rv, .title { background:#000; color:#fff; padding:0 3px; font-weight:bold; }
+.title { margin-bottom:15px; }
+
+acronym, abbr { cursor:help; }
+form { margin-bottom:0; }
+
+.surligne, .local { background:#ff0; color:#000; }
+.discret { background:#fff; color:#888; }
+.em { background:#eee; color:#880; }
+.ok { background:#fff; color:#080; font-weight:bold; }
+.warn { background:#fff; color:#f80; font-weight:bold; }
+.warning { margin-top:20px; text-align:center; font-size:10px;
+  padding-left:3px; padding-right:3px; font-weight:bold; }
+.success { background:#fff; color:#080;
+  padding:0 3px; font-weight:bold; font-size:12px; }
+.error { background:#800; color:White; margin-top:20px;
+  text-align:center; padding:0 3px; font-weight:bold; font-size:12px; }
+.EndBar { background:#c13; color:#eee;
+  padding:3px 10px 0 10px; margin:0; vertical-align:middle; }
+#php_resources { position:fixed; top:0; right:0; padding:0 5px; }
+.discreet, .signature { background:#fff; color:#aaa; }
+.discreet a, .signature a, #foot a { background:transparent; color:#aaf; }
+.signature a { background:#fff; color:#aaf; }
+/* .icons { position:absolute; left:300px; } */

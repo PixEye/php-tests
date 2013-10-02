@@ -1,0 +1,61 @@
+/* (c) 2005 - PixEye.net */
+body, h1, h2, h3, h4, h5, h6, p, div, th, .th2, td { font-family:sans-serif; }
+body { background:#000 url(../../v2/jpg/bg.jpg) fixed; color:#ddd; margin:0; }
+#main { padding:10px 20px; }
+
+h1 { font-size:28px; background:#aaa; color:#000; padding:10px 30px;
+	border-left:solid #fe5 30px; border-bottom:solid #ed5 1px;
+	margin:0; }
+h2 { font-size:24px; background:transparent; color:#ff8;
+	font-style:italic; text-align:center; margin:15px; }
+h3 { font-size:19px; text-decoration:underline; }
+h4 { font-size:16pt; }
+h5 { font-size:14pt; }
+p, div, li, th, .th2, td { font-size:11px; }
+th { background:#ff8; color:#000; padding:0 5px; border:solid 1px #000; }
+.th2 { background:transparent; color:#ff8; text-align:center;
+	font-weight:bold; border:dotted 1px; }
+.cbo { text-align:center; border:dotted 1px; }
+.success { background:#000; color:#0c0; }
+.error { background:#fff; color:#c00; font-weight:bold; }
+
+#result, form { border:dashed 2px #ff8; padding:10px; }
+#result, form, #back { margin:70px 120px; }
+.margin { margin:20px; }
+#result { text-align:center; }
+p:first-letter { font-size:larger; font-style:bolder; }
+p:first-letter, strong { background:transparent; color:#fff; }
+code, pre, tt { background:#fc5; color:#000; }
+input { margin:5px; }
+input:hover { background:#ff8; color:#000; }
+
+a { font-weight:bold; }
+a:link { background:transparent; color:#88f; }
+a:visited { background:transparent; color:#99b; }
+a:hover { background:transparent; color:#ff8; text-decoration:none; }
+a:active { background:transparent; color:#ffb; }
+
+h1 a:link { background:#aaa; color:#000; }
+h1 a:visited { background:#aaa; color:#000; }
+h1 a:hover { background:#aaa; color:#ff8; text-decoration:underline; }
+h1 a:active { background:#aaa; color:#000; }
+
+abbr, acronym { cursor:help; }
+label:hover { border-bottom:dashed #ff8 1px; }
+li:hover { background:#aaa; color:#000; }
+
+/* My ids and classes: */
+.monospace, .h { font-family:monospace; }
+.left { float:left; }
+.right { float:right; }
+.both { clear:both; }
+
+#submit { float:left; }
+#reset { float:right; }
+#source { margin-bottom:20px; }
+
+#foot, #tail, small { font-size:10px; }
+#foot, #tail { background:#000; color:#aaa; padding:5px;
+	border-top:dashed 1px #aaa; border-left:dashed 1px #aaa;
+	position:absolute; bottom:0; right:0; }
+body #foot, body #tail { position:fixed; }
