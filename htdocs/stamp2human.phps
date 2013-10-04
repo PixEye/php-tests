@@ -1,1 +1,0 @@
-stamp2human.php
