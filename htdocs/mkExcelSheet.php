@@ -1,20 +1,30 @@
 <?php
-// https://github.com/PHPOffice/PHPExcel/blob/develop/Documentation/markdown/Overview/03-Creating-a-Spreadsheet.md
+/**
+ * PHPExcel is licensed under LGPL (GNU LESSER GENERAL PUBLIC LICENSE)
+ *
+ * @link https://github.com/PHPOffice/PHPExcel
+ * @link https://github.com/PHPOffice/PHPExcel/blob/develop/Documentation/markdown/Overview/03-Creating-a-Spreadsheet.md
+ */
 
-require_once 'PHPExcel-develop/Classes/PHPExcel.php';
+@include_once 'PHPExcel/Classes/PHPExcel.php'; // not a require to handle the error:
+if (!class_exists('PHPExcel'))
+	die('PHPExcel library is required!'.
+		' See: https://github.com/PHPOffice/PHPExcel'.PHP_EOL);
 
 /** Create a new PHPExcel Object **/
 $objPHPExcel = new PHPExcel();
 
-// https://github.com/PHPOffice/PHPExcel/blob/develop/Documentation/markdown/Overview/07-Accessing-Cells.md
+/**
+ * @link https://github.com/PHPOffice/PHPExcel/blob/develop/Documentation/markdown/Overview/07-Accessing-Cells.md
+ */
 
 $objPHPExcel->getActiveSheet()->setCellValue('A1', 'Numéro de téléphone');
 
 // Set cell A1 with a numeric value, but tell PHPExcel it should be treated as a string
 $objPHPExcel->getActiveSheet()->setCellValueExplicit(
-    'A2',
-    '01513789642',
-    PHPExcel_Cell_DataType::TYPE_STRING
+	'A2',
+	'01513789642',
+	PHPExcel_Cell_DataType::TYPE_STRING
 );
 
 // Set cell A2 with a numeric value
@@ -25,30 +35,30 @@ $objPHPExcel->getActiveSheet()->setCellValue('A4', TRUE);
 
 // Set cell A4 with a formula
 $objPHPExcel->getActiveSheet()->setCellValue(
-    'A5', 
-    '=IF(A3, CONCATENATE(A1, " ", A2), CONCATENATE(A2, " ", A1))'
+	'A5', 
+	'=IF(A3, CONCATENATE(A1, " ", A2), CONCATENATE(A2, " ", A1))'
 );
 
 
 $styleArray = array(
-    'font' => array(
-        'bold' => true,
-    ),
-    'alignment' => array(
-        'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_RIGHT,
-    ),
-    'borders' => array(
-        'top' => array(
-            'style' => PHPExcel_Style_Border::BORDER_THICK,
-            'color' => array('argb' => 'FFFF0000'),
-        ),
-    ),
-    'fill' => array(
-        'type' => PHPExcel_Style_Fill::FILL_SOLID,
-        'startcolor' => array(
-            'argb' => 'FFA0A0A0',
-        ),
-    ),
+	'font' => array(
+		'bold' => true,
+	),
+	'alignment' => array(
+		'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_RIGHT,
+	),
+	'borders' => array(
+		'top' => array(
+			'style' => PHPExcel_Style_Border::BORDER_THICK,
+			'color' => array('argb' => 'FFFF0000'),
+		),
+	),
+	'fill' => array(
+		'type' => PHPExcel_Style_Fill::FILL_SOLID,
+		'startcolor' => array(
+			'argb' => 'FFA0A0A0',
+		),
+	),
 );
 
 $objPHPExcel->getActiveSheet()->getStyle('A3')->applyFromArray($styleArray);
