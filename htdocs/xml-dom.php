@@ -1,5 +1,5 @@
 <?php
-include_once 'lib/head.php';
+include_once 'Include/head.php';
 
 // @see: http://efreedom.com/Question/1-262351/Remove-Child-Specific-Attribute-SimpleXML-PHP
 
@@ -35,4 +35,4 @@ try {
 catch (Exception $e) {
 	echo "\t  <div class='error'>".$e->getMessage()."</div>\n\n";
 }
-include_once 'lib/tail.php';
+include_once 'Include/tail.php';

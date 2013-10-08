@@ -1,5 +1,5 @@
 <?php
-include_once 'lib/head.php';
+include_once 'Include/head.php';
 ?>
 	<h2>Test de l'objet&nbsp;: SimpleXMLElement</h2>
 <?php
@@ -29,7 +29,7 @@ try {
 	echo '<pre>'.htmlSpecialChars($xml)."</pre>\n\n";
 
 	// Parsing XML:
-	include_once 'lib/xml-parser.php';
+	include_once 'Include/xml-parser.php';
 	$XP = new XML_Parser;
 	$ns = 'ovf';
 	$target_type = 'string';
@@ -98,4 +98,4 @@ try {
 } catch (Exception $e) {
 	echo "\t  <span class='error'>".$e->getMessage()."</span></p>\n\n";
 }
-include_once 'lib/tail.php';
+include_once 'Include/tail.php';

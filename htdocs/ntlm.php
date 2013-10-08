@@ -4,7 +4,7 @@
  * $Id$
  */
 
-require_once 'lib/my-functions.php'; // for getUserAgent() & getOS()
+require_once 'Include/my-functions.php'; // for getUserAgent() & getOS()
 
 /**
  * http://www.developpez.net/forums/d744317/webmasters-developpement-web/flashflex/flex/ntlm-flex/
@@ -27,43 +27,43 @@ class Ntlm
       $result = 'Proxy bypass!';
     }
     elseIf(!isSet($headers['Authorization']))
-    {						//si l'entete autorisation est inexistante
+    {
       $isOk = error_log($log.__LINE__);
-      header( 'HTTP/1.0 401 Unauthorized' );	//envoi au client le mode d'identification
-      header( 'WWW-Authenticate: NTLM' );	//dans notre cas le NTLM
-      exit;					//on quitte
+      header( 'HTTP/1.0 401 Unauthorized' );	// Send auth mode to the browser...
+      header( 'WWW-Authenticate: NTLM' );	// NTLM in our case.
+      exit;					// Then quit.
     }
 
-    if(isset($headers['Authorization']))	//dans le cas d'une authorisation (identification)
+    if(isSet($headers['Authorization']))
     {
       if(substr($headers['Authorization'], 0, 5) == 'NTLM ')
-      {	// on verifie que le client soit en NTLM
+      {	// Check that the browser uses NTML
 
-        $chaine=$headers['Authorization'];
-        $chaine=substr($chaine, 5);		// recuperation du base64-encoded type1 message
-        $chained64=base64_decode($chaine);	// decodage base64 dans $chained64
+        $auth_str=$headers['Authorization'];
+        $auth_str=substr($auth_str, 5);		// Get base64-encoded type1 message
+        $chained64=base64_decode($auth_str);
 
         if(ord($chained64{8}) == 1)
         {
-          // octet indiquant l'etape du processus d'identification (etape 3)
+	  // byte containing the step of the auth process (step 3)
 
-          // verification du drapeau NTLM "0xb2" a l'offset 13 dans le message type-1-message (comp ie 5.5+) :
-          //if (ord($chained64[13]) != 178)
-          //{
-          //	echo 'NTLM Flag error!';
-          //	exit;
-          //}
+          // Check NTLM flag "0xb2" at offset 13 in the type-1 message (IE 5.5+ compat) :
+          # if (ord($chained64[13]) != 178)
+          # {
+          # 	echo 'NTLM Flag error!';
+          # 	exit;
+          # }
 
           $retAuth = 'NTLMSSP'.chr(000).chr(002).chr(000).chr(000).chr(000).chr(000).chr(000).chr(000);
-          $retAuth .= chr(000).chr(040).chr(000).chr(000).chr(000).chr(001).chr(130).chr(000).chr(000);
-          $retAuth .= chr(000).chr(002).chr(002).chr(002).chr(000).chr(000).chr(000).chr(000).chr(000);
-          $retAuth .= chr(000).chr(000).chr(000).chr(000).chr(000).chr(000).chr(000);
+          $retAuth.= chr(000).chr(040).chr(000).chr(000).chr(000).chr(001).chr(130).chr(000).chr(000);
+          $retAuth.= chr(000).chr(002).chr(002).chr(002).chr(000).chr(000).chr(000).chr(000).chr(000);
+          $retAuth.= chr(000).chr(000).chr(000).chr(000).chr(000).chr(000).chr(000);
 
-          $retAuth64 =base64_encode($retAuth);		 // encode en base64
-          $retAuth64 = trim($retAuth64);		 // enleve les espaces de debut et de fin
+          $retAuth64 = base64_encode($retAuth);
+          $retAuth64 = trim($retAuth64);		 // strip useless spaces
           $isOk = error_log($log.__LINE__);
-          header( 'HTTP/1.0 401 Unauthorized' );	 // envoi le nouveau header
-          header( "WWW-Authenticate: NTLM $retAuth64" ); // avec l'identification supplementaire
+          header( 'HTTP/1.0 401 Unauthorized' );	 // send new header
+          header( "WWW-Authenticate: NTLM $retAuth64" ); // adding the ID
           exit;
         }
 
@@ -71,16 +71,16 @@ class Ntlm
         {
           // octet indiquant l'etape du processus d'identification (etape 5)
 
-          // on recupere le domaine
-          $lenght_domain = (ord($chained64[31])*256 + ord($chained64[30])); // longueur du domaine
-          $offset_domain = (ord($chained64[33])*256 + ord($chained64[32])); // position du domaine
-          // decoupage du domaine :
+          // Get the domaine
+          $lenght_domain = (ord($chained64[31])*256 + ord($chained64[30])); // length of domain
+          $offset_domain = (ord($chained64[33])*256 + ord($chained64[32])); // position of domain
+          // Make the domain:
           $domain = str_replace("\0", '', substr($chained64, $offset_domain, $lenght_domain));
 
-          //le login
-          $lenght_login = (ord($chained64[39])*256 + ord($chained64[38])); // longueur du login
+          // Get the login
+          $lenght_login = (ord($chained64[39])*256 + ord($chained64[38])); // length of login
           $offset_login = (ord($chained64[41])*256 + ord($chained64[40])); // position du login
-          // decoupage du login :
+          // Make the login:
           $login = str_replace("\0", '', substr($chained64, $offset_login, $lenght_login));
 
           if (!isSet($login))
@@ -89,10 +89,10 @@ class Ntlm
             throw new Error('Erreur');
           }
 
-          // stockage des donnees dans des variable de session
-          //$_SESSION['login']=$login;
-          //$url.='portail/traitements/traitement_login.php';
-          //header('Location: ' .$url);
+          // Save data in session vars:
+          # $_SESSION['login']=$login;
+          # $url.='portail/traitements/traitement_login.php';
+          # header('Location: ' .$url);
 
           $result = $login;
           $isOk = error_log($log.__LINE__." login='$login'");
@@ -128,6 +128,6 @@ if (''!=$login) $title = "$login - $title";
     <title><?php echo $title?></title>
   </head>
   <body>
-    <pre>Login r&eacute;cup&eacute;r&eacute; = '<?php echo $login?>'</pre>
+    <pre>Got login = '<?php echo $login?>'</pre>
   </body>
 </html>

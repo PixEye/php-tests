@@ -4,8 +4,6 @@
  *
  * @link http://www.php.net/manual/en/ref.ldap.php
  *
- * Adapted to Open Exchange format on the 2007-10-15
- *
  * Last commit of this file: $Id$
  */
 

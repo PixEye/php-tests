@@ -1,5 +1,5 @@
 <?php
-include_once 'lib/head.php';
+include_once 'Include/head.php';
 
 /**
  * My extended XML class based on SimpleXMLElement class
@@ -67,4 +67,4 @@ try {
 catch (Exception $e) {
 	echo "\n\t  <div class='error'>".$e->getMessage()."</div>\n\n";
 }
-include_once 'lib/tail.php';
+include_once 'Include/tail.php';
