@@ -5,6 +5,8 @@
  * @link http://www.php.net/manual/en/ref.ldap.php
  *
  * Adapted to Open Exchange format on the 2007-10-15
+ *
+ * Last commit of this file: $Id$
  */
 
 $config_file = 'Include/ldap-config.php'; // File where you put your own LDAP config
@@ -22,15 +24,16 @@ include_once 'Include/head.php';
 $ldap_server = 'localhost';
 $base_dn = 'o=My Company,c=FR';
 $search_dn = "ou=Users,$base_dn";
-$filter = '(objectClass=person)';
+# $filter = '(objectClass=person)';	// very simple filter
 # $filter = '(&(objectCategory=person)(objectClass=user))'; // All user objects from an AD
+$filter = '(&(objectCategory=person)(objectClass=user)(mail=*@*))';
 # $ldap_version = 3;
 # $rdn = 'me';
 # $bind_dn = "$rdn,$base_dn";
 # $pw = 'fake';
+$list_height = '330px';
 
-if (file_exists($config_file)) // Load custom config data
-	require_once $config_file; // (by overwriting previous variables)
+@include_once $config_file;	// <-- your own configuration here (overwrite previous vars)
 
 if (isSet($_REQUEST['filter']) && trim($_REQUEST['filter'])!='') $filter = $_REQUEST['filter'];
 if (isSet($_REQUEST['uid']) && trim($_REQUEST['uid'])!='') $filter = '(uid='.$_REQUEST['uid'].')';
@@ -94,52 +97,63 @@ if (!$link_id) {
 			ldap_error($link_id), "</span></strong></div>\n\n";
 	else {
 		echo "<span class=\"ok\">true (ok)</span></strong></div>\n\n";
-		echo "\t<div class=\"discret\">ldap_bind() took:\t$time_bind ms.<br/><br/></div>\n";
+		echo "\t<div class=\"discret\">ldap_bind() took:\t$time_bind ms.</div>\n";
 
 		if (!isSet($search_dn)) $search_dn = $base_dn;
-		echo "\t<div>Searching ", htmlSpecialChars("'$filter' from '$search_dn'..."),
-			" the result of this search is:\n\t  <strong>";
+		echo "\t<form action=\"", basename(__FILE__), "\">\n";
+		echo "\t", '<div>Searching <input type="text" name="filter" size="80" value="',
+			htmlSpecialChars("$filter"), '"/>',
+			"\t", '<input type="submit" value="Apply"/>', "<br/>\n";
+		echo htmlSpecialChars(" From '$search_dn'..."),
+			"\n\t  the result of this search is:\n\t  <output>";
 		// Search by name:
 		$time_search = microtime(true);
-		$sr = @ldap_search($link_id, $search_dn, $filter);
+		$search_result = @ldap_search($link_id, $search_dn, $filter);
 		$time_search = round(1000*(microtime(true) - $time_search));
 
-		if (false===$sr)
+		if (false===$search_result)
 			echo "<span class=\"error\">false (NOK)!<br/>\n\t\tError: ",
-				ldap_error($link_id), "</span></strong></div>\n";
+				ldap_error($link_id), "</span></output></div>\n";
 		else {
-			echo "$sr</strong></div>\n\n";
+			echo "$search_result</output></div>\n\n";
 			echo "\t<div class=\"discret\">ldap_search() took:\t",
 				$time_search, " ms.<br/><br/></div>\n";
 
-			$nb_results = ldap_count_entries($link_id, $sr);
+			$nb_results = ldap_count_entries($link_id, $search_result);
 			echo "\t<div>Found <strong>$nb_results entries</strong>.</div>\n\n";
 
 			// Sort entries:
 			$sort_field = 'cn';
 			echo "\t<div>Sorting by '$sort_field'... the result of this sort is:\n\t  <output>";
 			$time_sort = microtime(true);
-			$is_ok = ldap_sort($link_id, $sr, $sort_field);
+			$is_ok = ldap_sort($link_id, $search_result, $sort_field)?'true':'false';
 			$time_sort = round(1000*(microtime(true) - $time_sort));
 			echo "$is_ok</output></div>\n\n";
 			echo "\t<div class=\"discret\">ldap_sort(link_id, Result, '$sort_field') took:\t",
-				$time_sort, " ms.<br/><br/></div>\n";
+				$time_sort, " ms.</div>\n";
 
-			$info = ldap_get_entries($link_id, $sr);
-			$count = $info['count'];
+			// Get data of entries:
+			$get_data_time = microtime(true);
+			$Entries = ldap_get_entries($link_id, $search_result);
+			$get_data_time = round(1000*(microtime(true) - $get_data_time));
+			echo "\t<div class=\"discret\"><br/>ldap_get_entries(link_id, Result) took:\t",
+				$get_data_time, " ms.</div>\n";
+			$count = $Entries['count'];
 			echo "\t<div>Reading entries... data for $count entries:</div>\n\n";
+
+			# echo "\t<pre>", var_export($Entries, true), "</pre>\n\n"; 	# for debug
 
 			if ($count != $nb_results)
 				echo "\t<div class=\"error\">count = $count =!= $nb_results!</div>\n";
 
-			echo "\t<blockquote style=\"height:300px; border:inset 1px #888; overflow:auto\">\n";
+			echo "\t<blockquote style=\"height:$list_height; border:inset 1px #888; overflow:auto\">\n";
 			echo "\t<ol>\n";
 			$base_link = basename($_SERVER['PHP_SELF']);
 			$Birthdays = Array();
 			$NextBirthdays = Array();
-			for ($i = 0; $i<$info['count']; $i++) {
-				$Entry = $info[$i];
-
+			forEach($Entries as $Entry)
+			{
+				if (!is_array($Entry)) continue;
 				$dn = $Entry['dn'];
 				$cn = $Entry['cn'][0];
 				if (isSet($Entry['uid']))
@@ -264,7 +278,7 @@ if (!$link_id) {
 				$french_name = utf8_encode($french_name);
 				echo "\n\t\t<a href=\"$link\">$french_name</a>";	# ($login @ $org)";
 
-				if ($count == 1) {
+				if (1 == $count) {
 					$Resume = array();
 					forEach($Entry as $k => $v)
 						if (!is_numeric($k)) {
@@ -280,9 +294,8 @@ if (!$link_id) {
 					var_export($Resume);
 					echo "</pre>\n";
 				}
-
 				echo "</li>\n";
-			}
+			} // endForEach
 			echo "\t</ol>\n";
 			echo "\t</blockquote>\n";
 
@@ -309,7 +322,7 @@ if (!$link_id) {
 	echo "\t<br/>\n\n";
 	echo "\t<div>Disconnecting from server: '$ldap_server'... the result is: <output>";
 	$time_close = microtime(true);
-	$is_ok = ldap_unbind($link_id);
+	$is_ok = ldap_unbind($link_id)?'true':'false';
 	$time_close = round(1000*(microtime(true) - $time_close));
 	echo "$is_ok</output></div>\n\n";
 	echo "\t<div class=\"discret\">ldap_unbind() took:\t$time_close ms.<br/><br/></div>\n";

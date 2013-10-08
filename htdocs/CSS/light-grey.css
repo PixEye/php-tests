@@ -2,7 +2,7 @@
  * Created by Julien Moreau aka PixEye
  *
  * Last commit of this file:
- * $Id: fcff24af359497188e7cfbe50da288597e3eb24a $
+ * $Id$
  */
 
 html, body { background:#fff; color:#000; margin:0; overflow:auto; }
@@ -20,7 +20,7 @@ h2, h3, h4, p, div, th, td { font-family:sans-serif; }
 p, div, th, td, li, input, select, option { font-size:11px; }
 p { text-align:justify; text-indent:20px; }
 
-code, pre, tt, textarea, .monospace { font-family:monospace; font-size:12px; }
+code, output, pre, tt, textarea, .monospace { font-family:monospace; font-size:12px; }
 code, pre { background:#000; color:#ffb; padding:5px 9px; margin-top:10px; display:block; }
 code .discreet, pre .discreet { background:#000; color:#888; }
 code a, pre a { background:#000; color:#88f; }
@@ -64,8 +64,8 @@ body #foot { position:fixed; }
 
 #W3Cbuttons { float:left; }
 /* rv stands for Reverse Video: */
-STRONG, .rv, .title { padding:0 3px; font-weight:bold; font-size:larger; }
-.rv, .title { background:#000; color:#fff; padding:0 3px; font-weight:bold; }
+STRONG, .rv, .title { padding:0 3px; }
+.rv, .title { background:#000; color:#fff; padding:1px 3px; }
 .title { margin-bottom:15px; }
 
 acronym, abbr { cursor:help; }
@@ -91,10 +91,10 @@ form { margin-bottom:0; }
 /* .icons { position:absolute; left:300px; } */
 
 /* CSS3 / HTML5 */
-input:invalid { background-color:#fcc; color:black; }
-input:valid { background-color:#cfc; color:black; }
 input:required { border-color:#c00; color:black; }
+input:valid { background-color:#cfc; color:black; }
 input[type=email], input[type=url] { width:400px; }
+input:invalid { background-color:#fcc; color:black; }
 input[type=submit], input[type=reset] {
 	border-width:1px; padding:4px 8px; border-radius:10px;
 	background:#eee; margin:3px 9px;
