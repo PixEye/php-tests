@@ -103,7 +103,7 @@ if ($send) {
 }
 
 // Flex does not encode HTML accents!
-$signature = "<b>Your NAME</b><br/>
+$html_signature = "<b>Your NAME</b><br/>
 <a href=\"http://www.example.com/\">VeePee</a><br/>
 Your title<br/>
 Your service<br/>
@@ -119,9 +119,9 @@ other <strong>styles</strong> &amp; even
 <br/>
 <br/>
 Cordialement,<br/>
-<span style=\"background:#fff; color:#888\" class=\"signature\">-- <br/>\n$signature</span>";
+<span style=\"background:#fff; color:#888\" class=\"signature\">-- <br/>\n$html_signature</span>";
 
-@include_once 'Include/mail-config.php'; # <-- your $signature & $default_html_body here
+@include_once 'Include/mail-config.php'; # <-- your $html_signature & $default_html_body in this file
 ?>
 	<h2>Compose your message:</h2>
 
