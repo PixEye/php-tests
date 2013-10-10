@@ -16,31 +16,7 @@ $recursive = TRUE;  // recursive mode (or not)
 
 setLocale(LC_ALL, 'fr_FR'); // for printf('%f ...
 
-/**
- * Convert a byte size into a human readable amount using the units: K, M, G & T
- *
- * @param int the size in bytes
- */
-function to_human_size($size_in_bytes, $html_output = TRUE)
-{
-	if (!is_numeric($size_in_bytes))
-		throw new exception("The size '$size_in_bytes' is not a number!");
-
-	$size_in_bytes+= 0; // cast string to number
-
-	if (!$size_in_bytes) return '0';
-	if ($size_in_bytes<0) $size_in_bytes+= pow(2, PHP_INT_SIZE*8); // fix for files > 2GB
-
-	/**
-	 * @see http://fr.php.net/manual/fr/function.number-format.php
-	 */
-	$Units = array('', 'K', 'M', 'G', 'T');
-	$unit = floor(log($size_in_bytes, 2) / 10);
-	#print('<!-- '.__FUNCTION__."($size_in_bytes) unit='$unit' -->");
-	return sprintf('%01.1f%s',
-		$size_in_bytes/pow(1024, $unit),
-		$Units[$unit]);
-}
+require_once 'Include/functions.php';
 
 /**
  * Display a file in a formated line
@@ -158,12 +134,12 @@ function display_file($full_path, $display_name)
 
 	$file_mtime = date('Y-m-d H:i', $mtime); // --time-style=long-iso option
 	if (!isSet($size) or !is_numeric($size)) $size = fileSize($full_path);
-	if (is_numeric($size)) $size = to_human_size($size); // -h option
+	if (is_numeric($size)) $size = bytes2human($size, false); // -h option
 
 	if (!isSet($argv))
 		$file_mtime = "<span class=\"discreet\">$file_mtime</span>";
 
-	$llInfo = sprintf('%s<span class="discreet">%s %2d %-8s %-8s</span> %6s %s',
+	$llInfo = sprintf('%s<span class="discreet">%s %2d %-8s %-8s</span> %7s %s',
 		$fType, $llmod, $nlink, $owner, $group, $size, $file_mtime);
 
 	if ($mtime!=$ctime) {

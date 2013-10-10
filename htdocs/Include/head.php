@@ -1,8 +1,12 @@
 <?php
+/**
+ * Created on the 2005-04-19 by Julien Moreau aka PixEye
+ * Last commit of this file: $Id$
+ */
+
 $start_time = microtime(true);
 error_reporting(-1); ini_set('display_errors', 1); // Report all PHP errors
-if (isSet($argv)) return;
-# <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+if (isSet($argv)) return; // Do not make HTML on the CLI
 ?>
 <!doctype html>
 <?php
@@ -20,14 +24,14 @@ if (!isSet($lg)) $lg = 'fr';
 $base = '';
 $sl = '/';
 
-@include_once 'Include/my-functions.php';
+@include_once 'Include/functions.php';
 ?>
 <html lang="<?php echo $lg?>">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=<?php
 	echo $charset?>"<?php echo $sl?>>
     <link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"<?php echo $sl?>>
-<?php	if (!isset($disable_css)): ?>
+<?php	if (!isSet($disable_css)): ?>
     <link rel="stylesheet" type="text/css" href="<?php
 	echo $base.$css?>" title="style at load"<?php echo $sl?>>
 <?php foreach($CSS as $key => $val) {
@@ -41,13 +45,14 @@ $sl = '/';
 	}
     }
 	endif;
-    if (isset($head_addon))
+    if (isSet($head_addon) && ''!=trim($head_addon))
       echo '    '.str_replace("\n", "\n    ", trim($head_addon))."\n";
 ?>
     <title><?php echo strip_tags($title)?></title>
   </head>
   <body>
     <h1><?php echo $title?></h1>
+
     <div id="main">
 	<p class="center" id="source">
 <?php

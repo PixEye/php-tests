@@ -33,29 +33,32 @@ switch($lg) {
 	case 'fr':
 		$s = '&nbsp;';
 		$title = "Quelle est ma configuration technique&nbsp;?";
-		$User_agent = 'Navigateur';
-		$Lg = "Langues pr&eacute;f&eacute;r&eacute;es (dans l'ordre)";
+		$OS_n_UA = 'Système &amp; navigateur';
+		$Lg = "Langues préférées (dans l'ordre)";
 		break;
 	default: $lg = 'en';
 		$s = '';
 		$title = 'What is my technical configuration?';
-		$User_agent = 'Web browser';
+		$OS_n_UA = 'OS &amp; web browser';
 		$Lg = 'Prefered languages (in order)';
 }
 
+$charset = 'utf-8';
 include_once 'Include/head.php';
 ?>
-    <h2>IP<?php echo $s?>:</h2>
-		<p><?php echo isSet($_SERVER['REMOTE_HOST'])?$_SERVER['REMOTE_HOST']:
-	$_SERVER['REMOTE_ADDR'], ' (&nbsp;'.$_SERVER['REMOTE_ADDR'], '&nbsp;)'?></p>
+	<h2>IP<?php echo $s?>:</h2>
+	<p><?php echo isSet($_SERVER['REMOTE_HOST'])?$_SERVER['REMOTE_HOST']:
+	  $_SERVER['REMOTE_ADDR'], ' (&nbsp;'.$_SERVER['REMOTE_ADDR'], '&nbsp;)'?></p>
 
-		<h2><?php echo $User_agent, $s?>:</h2>
-		<p><?php echo $_SERVER['HTTP_USER_AGENT']?></p>
+	<h2><?php echo $OS_n_UA, $s?>:</h2>
+	<p><b>HTTP_USER_AGENT:</b> <?php echo $_SERVER['HTTP_USER_AGENT']?></p>
+	<p><b>Browser:</b> <?php echo getUserAgent()?></p>
+	<p><b>OS:</b> <?php echo getOS()?></p>
 
-		<h2><?php echo $Lg, $s?>:</h2>
+	<h2><?php echo $Lg, $s?>:</h2>
     <ol>
 <?php
-foreach($AcceptLg as $l) {
+forEach($AcceptLg as $l) {
 	$l2 = substr($l, 0, 2);
 	$f = "../img/flag-$l2.gif";
 	if (!file_exists($f)) $i = '';

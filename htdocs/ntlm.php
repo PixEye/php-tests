@@ -4,7 +4,7 @@
  * $Id$
  */
 
-require_once 'Include/my-functions.php'; // for getUserAgent() & getOS()
+require_once 'Include/functions.php'; // for getUserAgent() & getOS()
 
 /**
  * http://www.developpez.net/forums/d744317/webmasters-developpement-web/flashflex/flex/ntlm-flex/

@@ -6,22 +6,27 @@ include_once 'Include/head.php';
 $lq = '&laquo;&nbsp;';
 $rq = '&nbsp;&raquo;';
 $PHP_SELF = $_SERVER['PHP_SELF'];
-$script = basename($PHP_SELF);
+$script = basename($PHP_SELF, '.php');
+$script_filename = basename($PHP_SELF);
 $host = $_SERVER['SERVER_NAME'];
 $method = 'post';
-$result_name = '_'.strToUpper($method);
-$Result = $$result_name;
+$src_array_name = '_REQUEST';	# '_'.strToUpper($method);
+$Result = $$src_array_name;
 $nb_links = 0;
 
 function in_one_line($s) { return preg_replace('|\s+|', ' ', $s); }
 function br2nl($s) { return preg_replace('|<br/?>|i', "\n", $s); }
-function html_links_to_txt($s) {
+
+function html_links_to_txt($s)
+{
 	global $nb_links;
 	return preg_replace(
 		'|<a\s+.*href="([^"]*)"[^>]*>([^<]*)</a>|i',
 		"$2 [$1]", $s, -1 , $nb_links);
 }
-function html2txt($s, $keep_html_entities = FALSE) {
+
+function html2txt($s, $keep_html_entities = FALSE)
+{
 	$tmp = preg_replace('|^.*<body[^>]*>\s*|is', '', $s);
 	$tmp = html_links_to_txt($tmp);
 	$tmp = strip_tags(br2nl(in_one_line($tmp)));
@@ -33,14 +38,20 @@ function html2txt($s, $keep_html_entities = FALSE) {
 }
 
 $send = true; $mail_sent = false;
-forEach(array('from', 'to', 'subject', 'html_body') as $var) {
+forEach(array('from', 'to', 'subject', 'html_body') as $var)
+{
 	if (isSet($Result[$var]))
 		$$var = stripSlashes($Result[$var]);
-	else	{ $send = false; echo "\t<!-- $var est vide. -->\n"; }
+	else
+	{
+		$send = false;
+		echo "\t<!-- Parameter not set in \$$src_array_name: '$var'. -->\n";
+	}
 }
 
-if ($send) {
-	$boundary = md5(uniqid(time()));
+if ($send)
+{
+	$boundary = md5(uniqId(time()));
 	$plain_body = html2txt($html_body);
 	$html_body = "<html>\n  <head>\n".
 		"    <title>".htmlEntities($subject)."</title>\n".
@@ -59,19 +70,19 @@ if ($send) {
 
 	// Headers:
 	$headers = '';
-#	$subject = "=?$charset?Q?".imap_qprint($subject).'?=';
-	$subject = "=?$charset?B?".base64_encode($subject).'?=';
-	$subject = in_one_line($subject);
+#	$enc_subject = "=?$charset?Q?".imap_qprint($subject).'?=';
+	$enc_subject = "=?$charset?B?".base64_encode($subject).'?=';
+	$enc_subject = in_one_line($enc_subject);
 
 	//	main ones:
 #	$headers.= "From: Julien Moreau <jmoreau@example.com>\r\n";
-#	$headers.= "Subject: $subject\r\n";
+#	$headers.= "Subject: $enc_subject\r\n";
 #	$headers.= "To: $to\r\n";
-	if (isset( $cc) && trim( $cc)!='') $headers.= "Cc: $cc\r\n";
-	if (isset($bcc) && trim($bcc)!='') $headers.= "Bcc: $bcc\r\n";
+	if (isSet( $cc) && trim( $cc)!='') $headers.= "Cc: $cc\r\n";
+	if (isSet($bcc) && trim($bcc)!='') $headers.= "Bcc: $bcc\r\n";
 
 	//	priority:
-	if (!isset($priority)) $priority = '';
+	if (!isSet($priority)) $priority = '';
 	$priority = trim($priority);
 	switch($priority) {
 		case '1':
@@ -96,18 +107,17 @@ if ($send) {
 	$headers.= "$html_body\n--$boundary--\n"; 
 
 	// Send here:
-	$mail_sent = mail($to, $subject, '', $headers);
-	syslog(LOG_INFO, "Mail sent from $script ? ".($mail_sent?'yes':'NO'));
-#	echo "\t<!-- mail('', '', '',\n$headers) renvoie $mail_sent -->\n";
-#	echo "\t<!-- mail($to, $subject, message,\n$headers) renvoie $mail_sent -->\n";
+	$mail_sent = mail($to, $enc_subject, '', $headers);
+	syslog(LOG_INFO, "Mail sent from $script_filename ? ".($mail_sent?'yes':'NO'));
+#	echo "\t<!-- mail($to, $enc_subject, message,\n$headers) returns: $mail_sent -->\n";
 }
 
-// Flex does not encode HTML accents!
+// Flex does not encode HTML accents
 $html_signature = "<b>Your NAME</b><br/>
-<a href=\"http://www.example.com/\">VeePee</a><br/>
-Your title<br/>
-Your service<br/>
-Your address<br/>
+Title<br/>
+Service<br/>
+<a href=\"http://www.example.com/\">Company</a><br/>
+Address<br/>
 Disclaimer.";
 
 $default_html_body = "<b>H</b>ello,<br/>
@@ -117,38 +127,45 @@ Thus, there can be <b><span style=\"color:#080\">colors</span></b>,
 other <strong>styles</strong> &amp; even
 <a href=\"http://www.example.com/\">links</a>.<br/>
 <br/>
-<br/>
-Cordialement,<br/>
+Regards,<br/>
 <span style=\"background:#fff; color:#888\" class=\"signature\">-- <br/>\n$html_signature</span>";
 
 @include_once 'Include/mail-config.php'; # <-- your $html_signature & $default_html_body in this file
+
+if (!isSet($subject) || ''==trim($subject))
+	$subject = "Test of $script_filename from $host";
+if (!isSet($from) || ''==trim($from))
+	$from = "$script@$host";
 ?>
 	<h2>Compose your message:</h2>
 
-	<form action="<?php echo $script?>" method="<?php echo $method?>" name="sendmail" enctype="multipart/form-data">
+	<form action="<?php echo $script_filename?>" method="<?php echo $method?>" name="sendmail" enctype="multipart/form-data">
 	  <div class="center">
-	    <input type="submit" style="float:right" value="Send"<?php echo $sl?>><br<?php echo $sl?>>
+	    <label>From: <input type="email" name="from" required
+		value="<?php echo isSet($from)?$from:''?>"<?php echo $sl?>></label>
 	    <br<?php echo $sl?>>
 	    <label>Subject:
-	      <input type="text" name="subject" size="60"
-		value="Test of <?php echo $script?> from <?php echo $host?>"<?php echo $sl?>></label><br<?php echo $sl?>>
-	    <br<?php echo $sl?>>
-
-	    <label>To: <input type="email" name="to" required/></label>
-
+	      <input type="text" name="subject" size="60" required
+		value="<?php echo $subject?>"<?php echo $sl?>></label>
 	    <label>Priority:
 	      <select name="priority">
 		<option value="1">Hight</option>
 		<option value="3" selected>Normal</option>
 		<option value="5">Low</option>
-	      </select></label><br<?php echo $sl?>>
+	      </select>
+	    </label>
 	    <br<?php echo $sl?>>
-
-	    <label>Message:<br<?php echo $sl?>>
-	      <textarea name="html_body" rows="15" cols="80"
-><?php echo htmlSpecialChars($default_html_body)?></textarea></label><br<?php echo $sl?>>
-		<input type="submit" style="float:right" value="Send"<?php echo $sl?>><br<?php echo $sl?>>
-		<div>result_name = <?php echo $result_name?>:
+	    <label>To: <input type="email" name="to" required
+		value="<?php echo isSet($to)?$to:''?>"<?php echo $sl?>></label>
+	    <br<?php echo $sl?>>
+	    <input type="submit" style="float:right" value="Send"<?php echo $sl?>>
+	    <label>Message:
+	    <br<?php echo $sl?>>
+	      <textarea name="html_body" rows="12" cols="90"
+><?php echo htmlSpecialChars($default_html_body)?></textarea></label>
+	    <br<?php echo $sl?>>
+	    <input type="submit" style="float:right" value="Send"<?php echo $sl?>>
+	    <div>src_array_name = '<?php echo $src_array_name?>':
 		Send = <?php echo $send?'true':'false';
 		if ($send) {
 			echo ":\nmail_sent = ";
@@ -156,14 +173,17 @@ Cordialement,<br/>
 			echo $mail_sent?"<span class=\"ok\">true</span> (mailto: $to)":
 					'<span class="error">false</span>';
 		} ?>.</div>
-	    <br<?php echo $sl?>>
 	  </div>
 
 	  <h2>Previews:</h2>
-	  <div id="preview" style="text-align:left; width:46%; border:inset 1px; padding:5px; float:left">
-<?php echo $default_html_body?>
+
+	  <div id="rich_view"
+	    style="text-align:left; width:46%; border:inset 1px; padding:5px; float:left">
+<?php echo "$default_html_body\n"?>
 	  </div>
-	    <pre id="text" style="text-align:left; width:46%; border:inset 1px; padding:5px; float:left"
+
+	  <pre id="text"
+	    style="text-align:left; width:46%; border:inset 1px; padding:5px; float:left; margin:0 9px"
 ><?php echo html2txt($default_html_body, TRUE)?></pre>
 	</form>
 <?php

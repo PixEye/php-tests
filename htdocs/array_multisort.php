@@ -31,14 +31,14 @@ function sort_md_array($array, $by, $order, $type) {
 
 // Now, to test it
 //	Here is an array example:
-$test[0]['age'] = 42; $test[0]['name'] = "Dennis";
-$test[1]['age'] = 23; $test[1]['name'] = "David";
-$test[2]['age'] = 28; $test[2]['name'] = "Joseph";
+$test[0]['age'] = 42; $test[0]['name'] = 'David';
+$test[1]['age'] = 23; $test[1]['name'] = 'Asma';
+$test[2]['age'] = 28; $test[2]['name'] = 'Joseph';
 
-echo "\t<pre>before = "; print_r($test); echo "</pre>\n";
+echo "\t<pre class=\"leftBox\">before = "; print_r($test); echo "</pre>\n";
 $test = sort_md_array($test, 'age', SORT_ASC, SORT_NUMERIC);
-echo "<div>Call to sort_md_array(array, 'age', SORT_ASC, SORT_NUMERIC)</div>\n";
-echo "\t<pre>after  = "; print_r($test); echo "</pre>\n";
+echo "<div class=\"leftBox\">Call to sort_md_array(array, 'age', SORT_ASC, SORT_NUMERIC)</div>\n";
+echo "\t<pre class=\"leftBox\">after  = "; print_r($test); echo "</pre>\n";
 
 # This will return: Array (
 #	[0] => Array ( [name] => David  [age] => 23 )
