@@ -82,8 +82,9 @@ function getOS()
 {
   $ua = trim($_SERVER['HTTP_USER_AGENT']);
   if (''==$ua) return '';
+  if (false!==strPos($ua, 'iP')) error_log("iOS UA: $ua");
 
-  $MostKnown = array('Windows', 'Linux', 'Mac OS X', 'Unix', 'Android', 'iOS');
+  $MostKnown = array('Windows', 'Linux', 'Mac OS X', 'Unix', 'Android', 'iOS', 'iPhone', 'iPad');
   forEach($MostKnown as $short_name)
   {
     $pos = strIPos($ua, $short_name);
