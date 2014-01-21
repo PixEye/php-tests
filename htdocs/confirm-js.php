@@ -8,7 +8,7 @@ include_once 'Include/head.php';
 $self = basename($_SERVER['PHP_SELF']);
 
 // Important (because of head.php):
-if (strlen($lg)==2) {
+if (isSet($lg) && strLen($lg)==2) {
 	if ($lg=='en') $lg = 'en_US';
 	else $lg = $lg.'_'.strtoupper($lg).'@euro';
 }
@@ -21,13 +21,13 @@ $nb_supported_lg = count($SupportedLg);
 // Display supported languages if in debug mode:
 echo "  <!-- $nb_supported_lg supported languages",
 	" (from 'locales -a')";
-if ($DEBUG) { echo " : "; print_r($SupportedLg); }
+if (isSet($DEBUG) && $DEBUG) { echo " : "; print_r($SupportedLg); }
 echo " -->\n";
 
 $DEBUG = TRUE;		// active debug mode
 
 // Language detection from the web user agent preferences:
-if (empty($lg)) {
+if (!isSet($lg) || ''==trim($lg)) {
   $lg = 'en_US';	// Default language
   $HTTP_ACCEPT_LANGUAGE = $_SERVER[HTTP_ACCEPT_LANGUAGE];
   if ($DEBUG) echo "<!-- HTTP_ACCEPT_LANGUAGE=\"$HTTP_ACCEPT_LANGUAGE\" -->\n";
@@ -37,7 +37,7 @@ if (empty($lg)) {
     forEach($AcceptLg as $lgt) {
 	if ($DEBUG) echo "<!-- lgt = $lgt -->\n";
 	$pos = strpos($lgt, ';');
-	if ($pos!==FALSE) $lgt = substr($lgt, 0, $pos);
+	if ($pos!==FALSE) $lgt = subStr($lgt, 0, $pos);
 	if ($DEBUG) echo "<!-- lgt = $lgt -->\n";
 	$lgt = subStr(trim($lgt), 0, 5);
 	if (strlen($lgt)>2 && $lgt[2]=='-') {
@@ -53,7 +53,7 @@ if (empty($lg)) {
   if ($DEBUG) echo "  <!-- lg = '$lg' -->\n";
 } elseif ($DEBUG) echo "  <!-- lg was already set to : '$lg' -->\n";
 
-switch(substr($lg, 0, 2)) {
+switch(subStr($lg, 0, 2)) {
 	case 'fr':
 		$msg = 'Cliquez sur le bouton de votre choix.';
 		break;

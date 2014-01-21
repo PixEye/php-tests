@@ -50,7 +50,7 @@ $sl = '/';
 ?>
     <title><?php echo strip_tags($title)?></title>
   </head>
-  <body>
+  <body<?php if (isSet($body_addon)) echo $body_addon?>>
     <h1><?php echo $title?></h1>
 
     <div id="main">

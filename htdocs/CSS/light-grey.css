@@ -48,7 +48,7 @@ label { padding:3px; }
 .left { text-align:left; }
 .w30p { width:30%; }
 .w40p { width:40%; text-align:center; }
-#floatcolumn, .floatBox { float:right; margin:0; padding:0 10px; }
+#floatcolumn, .floatBox, .fright { float:right; margin:0; padding:0 10px; }
 #floatcolumn { width:330px; }
 .box, .leftBox, .rightBox { margin:10px 0; padding:10px; border:dashed 2px #ccc; }
 .leftBox { float:left; margin-left:10px; text-align:left; }

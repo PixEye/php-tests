@@ -1,9 +1,13 @@
 <?php
+$charset = 'utf-8';
 include_once 'Include/head.php';
 if(!isSet($argv)) echo "\t<pre>";
 
 if(isSet($argv) && isSet($argv[1]) && is_numeric($argv[1]))
-	$stamp = $argv[1]; else $stamp = 1380014220;
+	$stamp = $argv[1];
+elseIf (isSet($_REQUEST['stamp']) && ''!=trim($_REQUEST['stamp']))
+	$stamp = $_REQUEST['stamp'];
+else $stamp = 1380014220;
 
 # $locale = setLocale(LC_ALL, 0);
 # echo "locale(LC_ALL) = '$locale'", PHP_EOL;

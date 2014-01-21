@@ -16,6 +16,7 @@ $dialer_lib = 'Include/webdialer.js';
 if (file_exists($dialer_lib))
 	$head_addon = "<script type=\"text/javascript\" src=\"$dialer_lib\"></script>";
 
+$body_addon = ' onload="document.getElementById(\'form1\').reset()"';
 include_once 'Include/head.php';
 
 // Basic configuration:
@@ -36,7 +37,16 @@ $list_height = '330px';
 if (isSet($_REQUEST['filter']) && trim($_REQUEST['filter'])!='') $filter = $_REQUEST['filter'];
 if (isSet($_REQUEST['uid']) && trim($_REQUEST['uid'])!='') $filter = '(uid='.$_REQUEST['uid'].')';
 if (isSet($_REQUEST['cn']) && trim($_REQUEST['cn'])!='') $filter = '(cn='.$_REQUEST['cn'].')';
-if (isSet($_REQUEST['dn']) && trim($_REQUEST['dn'])!='') $filter = '(dn='.$_REQUEST['dn'].')';
+if (isSet($_REQUEST['dn']) && trim($_REQUEST['dn'])!='')
+{
+	$dn = trim($_REQUEST['dn']);
+	$pos = strPos($dn, ',');
+	if (false===$pos) $filter = $dn;
+	else {
+		$filter = subStr($dn, 0, $pos);
+		$search_dn = subStr($dn, 1+$pos);
+	}
+}
 
 $current_day = date('d');
 $current_month = date('m');
@@ -98,11 +108,11 @@ if (!$link_id) {
 		echo "\t<div class=\"discret\">ldap_bind() took:\t$time_bind ms.</div>\n";
 
 		if (!isSet($search_dn)) $search_dn = $base_dn;
-		echo "\t<form action=\"", basename(__FILE__), "\">\n";
+		echo "\t<form id=\"form1\" action=\"", basename(__FILE__), "\">\n";
 		echo "\t", '<div>Searching <input type="text" name="filter" size="80" value="',
-			htmlSpecialChars("$filter"), '"/>',
+			htmlEntities($filter), '"/>',
 			"\t", '<input type="submit" value="Apply"/>', "<br/>\n";
-		echo htmlSpecialChars(" From '$search_dn'..."),
+		echo htmlEntities(" From '$search_dn'..."),
 			"\n\t  the result of this search is:\n\t  <output>";
 		// Search by name:
 		$time_search = microtime(true);
@@ -271,8 +281,8 @@ if (!$link_id) {
 				echo '</span>';
 
 				# $link = "$base_link?uid=".urlEncode($login);
-				# $link = "$base_link?dn=".urlEncode($dn);
-				$link = "$base_link?cn=".urlEncode($cn);
+				$link = "$base_link?dn=".urlEncode($dn);
+				# $link = "$base_link?cn=".urlEncode($cn);
 				$french_name = utf8_encode($french_name);
 				echo "\n\t\t<a href=\"$link\">$french_name</a>";	# ($login @ $org)";
 

@@ -26,7 +26,7 @@ if (count($argv)<=1)
 $input_file = $argv[1];
 $base_input_file = basename($input_file);
 echo "Parsing '$input_file'...", PHP_EOL;
-$serialized = file_get_contents($input_file);
+$serialized = trim(file_get_contents($input_file));
 
 $decoded = unserialize($serialized);
 if (false===$decoded)
