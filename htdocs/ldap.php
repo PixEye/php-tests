@@ -89,12 +89,13 @@ if (!$link_id) {
 
 	if (isSet($pw) && (isSet($rdn) || isSet($bind_dn))) {
 		if (!isSet($bind_dn)) $bind_dn = "$rdn,$base_dn";
-		echo "\t<div>Binding as '$bind_dn'... the result is: <strong>";
+		echo "\t<div>Binding as '$bind_dn'... the result is:\n\t <strong>";
 		$time_bind = microtime(true);
 		$is_ok = @ldap_bind($link_id, $bind_dn, $pw); // connect with credentials
 	}
 	else {
-		echo "\t<div><span class=\"warn\">Anonymous binding...</span> the result of the authentication is: <strong>";
+		echo "\t<div><span class=\"warn\">Anonymous binding...</span>",
+			" the result of the authentication is:\n\t <strong>";
 		$time_bind = microtime(true);
 		$is_ok = @ldap_bind($link_id);	// anonymous connection
 	}
@@ -111,8 +112,8 @@ if (!$link_id) {
 		echo "\t<form id=\"form1\" action=\"", basename(__FILE__), "\">\n";
 		echo "\t", '<div>Searching <input type="text" name="filter" size="80" value="',
 			htmlEntities($filter), '"/>',
-			"\t", '<input type="submit" value="Apply"/>', "<br/>\n";
-		echo htmlEntities(" From '$search_dn'..."),
+			"\n\t  ", '<input type="submit" value="Apply"/>', "<br/>\n";
+		echo "\t", htmlEntities(" From '$search_dn'..."),
 			"\n\t  the result of this search is:\n\t  <output>";
 		// Search by name:
 		$time_search = microtime(true);
