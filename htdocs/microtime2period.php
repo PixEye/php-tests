@@ -24,7 +24,8 @@ if ($nb_years>0) print("$nb_years year(s), ");
 $nb_month = floor($nb_days/30); $nb_days = $nb_days%30;
 if ($nb_month>0) print("$nb_month month(s), ");
 
-printf("%d day(s), %d:%2d:%2d", $nb_days, $hour, $min, $sec);
+if ($nb_days>0) print("$nb_days day(s), ");
+printf("%d:%02d:%02d", $nb_days, $hour, $min, $sec);
 
 if(!isSet($argv)) echo '</pre>';
 echo PHP_EOL;
