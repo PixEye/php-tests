@@ -1,10 +1,28 @@
 <?php
-include_once 'Include/head.php';
-if(!isSet($argv)) echo "\t<pre>";
+/**
+ * Last commit of this file (GMT):
+ * $Id$
+ *
+ * PHP version 5.3
+ *
+ * @category  PHP
+ * @package   PixShellScripts
+ * @author    Julien Moreau <jmoreau@pixeye.net>
+ * @copyright 2013 PixEye.net
+ * @license   Affero GPL http://choosealicense.com/licenses/agpl/
+ * @version   GIT: $Revision$
+ * @link      https://github.com/PixEye/PixShellScripts
+ * @since     Local time: $Date$
+ * @filesource
+ */
 
-if(isSet($argv) && isSet($argv[1]))
-	$time_in_sec = $argv[1];
-else	$time_in_sec = microtime(true); # 2719635.325337;
+file_exists('Include/head.php') && require_once 'Include/head.php';
+if (!isSet($argv)) echo "\t<pre>";
+
+if (isSet($argv) && isSet($argv[1]))
+    $time_in_sec = $argv[1];
+else
+    $time_in_sec = microtime(true);
 
 $nb_days = floor(($time_in_sec / 86400)*1.0);
 $calc1 = $nb_days * 86400;
@@ -27,6 +45,6 @@ if ($nb_month>0) print("$nb_month month(s), ");
 if ($nb_days>0) print("$nb_days day(s), ");
 printf("%d:%02d:%02d", $nb_days, $hour, $min, $sec);
 
-if(!isSet($argv)) echo '</pre>';
+if (!isSet($argv)) echo '</pre>';
 echo PHP_EOL;
-include_once 'Include/tail.php';
+file_exists('Include/tail.php') && require_once 'Include/tail.php';

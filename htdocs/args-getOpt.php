@@ -1,12 +1,29 @@
 #!/usr/bin/env php
 <?php
+/**
+ * Last commit of this file (GMT):
+ * $Id$
+ *
+ * PHP version 5.3
+ *
+ * @category  PHP
+ * @package   PixShellScripts
+ * @author    Julien Moreau <jmoreau@pixeye.net>
+ * @copyright 2013 PixEye.net
+ * @license   Affero GPL http://choosealicense.com/licenses/agpl/
+ * @version   GIT: $Revision$
+ * @link      https://github.com/PixEye/PixShellScripts
+ * @since     Local time: $Date$
+ * @filesource
+ */
+
 $small_options = 'dhn:qst';
 $long_options = Array('debug', 'help', 'quiet', 'safe', 'test');
 
-if (isSet($_SERVER['HTTP_HOST']))
-	echo '<pre>_SERVER["HTTP_HOST"] = '.$_SERVER['HTTP_HOST'].PHP_EOL;
+isSet($_SERVER['HTTP_HOST']) &&
+    echo '<pre>_SERVER["HTTP_HOST"] = '.$_SERVER['HTTP_HOST'].PHP_EOL;
 
-if (!isSet($argc)) $argc = 'NULL';
+isSet($argc) || $argc = 'NULL';
 echo "argc = $argc", PHP_EOL;
 
 echo 'argv = ',
@@ -17,6 +34,6 @@ $Opt = getOpt($small_options, $long_options);
 echo 'Opt = ';
 var_export($Opt);
 
-if (isSet($_SERVER['HTTP_HOST'])) echo '</pre>';
+isSet($_SERVER['HTTP_HOST']) && echo '</pre>';
 
 echo PHP_EOL;

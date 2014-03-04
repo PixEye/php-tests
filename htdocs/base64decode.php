@@ -22,10 +22,10 @@
  */
 
 if (!isSet($argv)) { // if not called from command line
-    include_once 'Include/head.php';
-    $msg = 'Warning: this script is supposed to be called from the command line!';
+    file_exists('Include/head.php') && include_once 'Include/head.php';
+    $msg = 'Warning: this script is supposed to be called from the CLI!';
     echo "\t<pre>$msg</pre>", PHP_EOL;
-    include_once 'Include/tail.php';
+    file_exists('Include/tail.php') && include_once 'Include/tail.php';
     exit(0);
 }
 
@@ -47,8 +47,9 @@ if (isSet($argv[1])) {
         $prefix = subStr($input, 0, $pos);
         $input  = subStr($input, $pos);
         echo "$prefix: ", base64_decode($input), PHP_EOL;
-    } else
+    } else {
         echo base64_decode($input), PHP_EOL;
+    }
 } else {
     // Filter mode: decode STDIN
     while ($input=fgets(STDIN)) {
@@ -56,8 +57,9 @@ if (isSet($argv[1])) {
             $prefix = subStr($input, 0, $pos);
             $input  = subStr($input, $pos);
             echo "$prefix: ", base64_decode($input), PHP_EOL;
-        } else
+        } else {
             echo $input; // End of line is already in $input
+        }
     }
 }
 
