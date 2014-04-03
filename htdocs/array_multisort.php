@@ -16,7 +16,7 @@
  * @filesource
  */
 
-file_exists('Include/head.php') && require_once 'Include/head.php';
+is_readable('Include/head.php') && require_once 'Include/head.php';
 
 /**
  * Sort a multi-dimensional array.
@@ -71,4 +71,7 @@ echo "\t<pre class=\"leftBox\">after  = "; print_r($test); echo "</pre>\n";
     [1] => Array ( [name] => Joseph [age] => 28 )
     [2] => Array ( [name] => Asma   [age] => 42 ) ) */
 
-file_exists('Include/tail.php') && require_once 'Include/tail.php';
+is_readable('Include/tail.php') && require_once 'Include/tail.php';
+
+// Vim editing preferences (PHP_CodeSniffer compliant):
+// vim: tabstop=4 shiftwidth=4 expandtab

@@ -18,7 +18,7 @@ h5 { font-size:14px; }
 h6 { font-size:12px; }
 h2, h3, h4, p, div, th, td { font-family:Arial, sans-serif; }
 input, textarea { border:inset 1px #888; margin:2px 3px; padding:1px 3px; }
-p, div, th, td, li, input, select, option { font-size:11px; }
+/* p, div, th, td, li, input, select, option { font-size:11px; } */
 p { text-align:justify; text-indent:20px; }
 
 code, output, pre, tt, .monospace { font-family:monospace; font-size:12px; }
@@ -37,13 +37,16 @@ a:hover { background:#fff; color:#008; text-decoration:underline; }
 #source { margin-bottom:16px; }
 
 table { border-collapse:collapse; }
+th { text-align:center; }
+tbody>tr>th { text-align:right; }
 th, td { padding:2px 4px; }
-#tabOffres { border:solid 2px #000; }
-#tabOffres td, #tabOffres th, .bordered { border:solid 1px #888; }
 th, label:hover { background:#ccc; color:#000 }
+td { text-align:left; }
 label { padding:3px; }
 
+big, .big { font-size:14px; }
 .center { text-align:center; margin:0 auto;; }
+table.grid th, table.grid td { border:solid 1px #ddd; margin:0; padding:5px; }
 .right, .number, #foot { text-align:right; }
 .left { text-align:left; }
 .w30p { width:30%; }
@@ -57,7 +60,7 @@ body .rightBox { position:fixed; }
 .margin, h3, hr, p, #W3Cbuttons, .em
   { margin-left:20px; margin-right:20px; }
 li { margin-left:50px; margin-right:50px; }
-small, #foot { font-size:10px; }
+small, .discreet, #foot { font-size:10px; }
 #foot { border-top:solid 1px #888; padding:0 5px; margin:0;
 	position:absolute; bottom:0; right:0;
 	background:rgba(255, 255, 255, 0.5); color:#bbb; }
@@ -88,8 +91,9 @@ form { margin-bottom:0; }
 #php_resources { position:fixed; top:0; right:0; padding:0 5px; }
 .discreet, .signature { background:#fff; color:#aaa; }
 .discreet a, .signature a, #foot a { background:transparent; color:#aaf; }
-.signature a { background:#fff; color:#aaf; }
 /* .icons { position:absolute; left:300px; } */
+.signature a { background:#fff; color:#aaf; }
+.top_marged { margin-top:50px; }
 
 /* CSS3 / HTML5 */
 input:required { border-color:#c00; color:black; }

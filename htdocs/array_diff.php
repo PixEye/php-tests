@@ -16,7 +16,7 @@
  * @filesource
  */
 
-file_exists('Include/head.php') && require_once 'Include/head.php';
+is_readable('Include/head.php') && require_once 'Include/head.php';
 
 $a1 = array('a' => 'green', 'red', 'blue', 'red');
 print('<pre>a1 = ');
@@ -35,4 +35,8 @@ print("</pre>\n<hr/>\n<pre>array_diff(a2, a1) = a2 - a1 = ");
 var_export($result);
 
 print("</pre>\n");
-file_exists('Include/tail.php') && require_once 'Include/tail.php';
+
+is_readable('Include/tail.php') && require_once 'Include/tail.php';
+
+// Vim editing preferences (PHP_CodeSniffer compliant):
+// vim: tabstop=4 shiftwidth=4 expandtab
