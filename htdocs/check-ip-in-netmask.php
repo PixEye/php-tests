@@ -89,13 +89,14 @@ function ipInCidrSubnet($ip, $cidr_network)
     $subnet &= $mask; // nb: in case the supplied subnet wasn't correctly aligned
     $ret = (($lip & $mask) == $subnet);
 
-	$class = $ret?'ok':'error';
-	printf(
-		'%s%22s(%-17s, %-20s) =&gt; <span class="%s">%s</span>',
-		"\n", 'ipInCidrSubnet', "'$ip'", "'$cidr_network'", $class, var_export($ret, 1)
-	);
+    $class = $ret?'ok':'error';
+    printf(
+        '%s%22s(%-17s, %-20s) =&gt; <span class="%s">%s</span>',
+        "\n", 'ipInCidrSubnet', "'$ip'", "'$cidr_network'",
+        $class, var_export($ret, 1)
+    );
 
-	return $ret;
+    return $ret;
 }
 
 /**
@@ -145,34 +146,32 @@ if (''!=$ip_ranges) {
 
         forEach ($ip_ranges as $i => $ip_range) {
             $n = $i + 1;
-			$nb_errors = 0;
+            $nb_errors = 0;
             $ip_range = trim($ip_range);
 
-			echo "\n";
+            echo "\n";
 
-            $minus_pos = strPos($ip_range, '-');
             $minus_count = substr_count($ip_range, '-');
             if ($minus_count>1) {
                 throw new ErrorException("$minus_count in IP range #$n!");
-            } elseIf (false===$minus_pos) {
+            } elseIf (!$minus_count) {
                 $ip1 = $ip_range;
                 $ip2 = $ip_range;
-                $ip_range = "$ip1-$ip2";
             } else {
                 list($ip1, $ip2) = explode('-', $ip_range);
             }
 
-			// Check IP syntax:
-			if (!preg_match("|$ip_pattern|", $ip1)) {
-				throw new ErrorException(
-					"In IP range #$n, IP1 is invalide: '$ip1'!"
-				);
-			}
-			if (!preg_match("|$ip_pattern|", $ip2)) {
-				throw new ErrorException(
-					"In IP range #$n, IP2 is invalide: '$ip2'!"
-				);
-			}
+            // Check IP syntax:
+            if (!preg_match("|$ip_pattern|", $ip1)) {
+                throw new ErrorException(
+                    "In IP range #$n, IP1 is invalide: '$ip1'!"
+                );
+            }
+            if (!preg_match("|$ip_pattern|", $ip2)) {
+                throw new ErrorException(
+                    "In IP range #$n, IP2 is invalide: '$ip2'!"
+                );
+            }
 
             $l1 = ip2long($ip1);
             $l2 = ip2long($ip2);
@@ -184,25 +183,25 @@ if (''!=$ip_ranges) {
             $cidr_network = "$ip1/$cidr";
             // echo "\n"; // \n\tcidr_network = '$cidr_network'";
             $res = ipInCidrSubnet($gateway, $cidr_network)?'ok':'NOK';
-			$nb_errors = ('ok'==$res)?$nb_errors:$nb_errors+1;
+            $nb_errors = ('ok'==$res)?$nb_errors:$nb_errors+1;
 
             if ($ip2!=$ip1) {
                 // Check that IP1 & IP2 are in the same subnet:
-				// echo "\n"; // \n\tcidr_network = '$cidr_network'";
-				$res = ipInCidrSubnet($ip2, $cidr_network)?'ok':'NOK';
-			    $nb_errors = ('ok'==$res)?$nb_errors:$nb_errors+1;
+                // echo "\n"; // \n\tcidr_network = '$cidr_network'";
+                $res = ipInCidrSubnet($ip2, $cidr_network)?'ok':'NOK';
+                $nb_errors = ('ok'==$res)?$nb_errors:$nb_errors+1;
 
                 // Check that IP2 is in same subnet as the gateway:
                 $cidr_network = "$ip2/$cidr";
                 // echo "\n"; // \n\tcidr_network = '$cidr_network'";
                 $res = ipInCidrSubnet($gateway, $cidr_network)?'ok':'NOK';
-			    $nb_errors = ('ok'==$res)?$nb_errors:$nb_errors+1;
+                $nb_errors = ('ok'==$res)?$nb_errors:$nb_errors+1;
             }
 
-			$s = ($nb_errors>1)?'s':'';
-			$class = $nb_errors?'error':'ok';
-			echo "\n\t\t<span class=\"$class\">",
-				"Range #$n '$ip_range' has $nb_errors error$s.</span>";
+            $s = ($nb_errors>1)?'s':'';
+            $class = $nb_errors?'error':'ok';
+            echo "\n\t\t<span class=\"$class\">",
+                "Range #$n ($ip_range) has $nb_errors error$s.</span>";
         }
 
         echo "</pre>\n";
