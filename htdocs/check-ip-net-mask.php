@@ -22,12 +22,14 @@ $charset = 'UTF-8';
 $body_addon = ' onload="document.getElementById(\'form1\').reset()"';
 require_once 'Include/head.php';
 
+$ip_pattern = '([12]?\d{1,2}\.){3}[12]?\d{1,2}';
 $netmask = isSet($_REQUEST['netmask'])?trim($_REQUEST['netmask']):'255.255.255.0';
 $gateway = isSet($_REQUEST['gateway'])?trim($_REQUEST['gateway']):'192.168.109.1';
 $ip_ranges = isSet($_REQUEST['ip_ranges'])?trim($_REQUEST['ip_ranges']):
     "192.168.109.0\r\n".
     "192.168.109.1-192.168.109.210\r\n".
     "192.168.108.0\r\n".
+    "192.168.108.20-192.168.109.2\r\n".
     "192.168.109.20-192.168.109.2";
 
 $nbl = substr_count($ip_ranges, "\n") + 2;
@@ -40,14 +42,14 @@ echo "\t<form id=\"form1\" action=\"", basename(__FILE__), "\">\n";
 		<th><label for="netmask">Mask:</label></th>
 		<td>
 		  <input name="netmask" id="netmask" required="required" type="text"
-		    value="<?php echo $netmask?>"/>
+		    value="<?php echo $netmask?>" pattern="<?php echo $ip_pattern?>"/>
 		</td>
 	      </tr>
 	      <tr>
 		<th><label for="gateway">Gateway:</label></th>
 		<td>
 		  <input name="gateway" id="gateway" required="required" type="text"
-		     value="<?php echo $gateway?>" pattern="([12]?\d{1,2}\.){3}[12]?\d{1,2}"/>
+		    value="<?php echo $gateway?>" pattern="<?php echo $ip_pattern?>"/>
 		</td>
 	      </tr>
 	      <tr>
@@ -76,57 +78,24 @@ echo "\t<form id=\"form1\" action=\"", basename(__FILE__), "\">\n";
  * @param string $cidr_network A subnet in CIDR format (a.b.c.d/n)
  *
  * @return boolean
- * @link http://stackoverflow.com/a/13672341/649993
- */
-function checkNetmask($ip, $cidr_network)
-{
-    @list($net, $bits) = explode('/', $cidr_network);
-    $bits = isSet($bits) ? $bits : 32;
-    $bitmask = -pow(2, 32-$bits) & 0x00000000FFFFFFFF;
-    $netmask = ip2long($net) & $bitmask;
-    $ip_bits = ip2long($ip)  & $bitmask;
-
-    return (($netmask ^ $ip_bits) == 0);
-}
-
-/**
- * Check that an IP is in a CIDR submet
- *
- * @param string $ip           An IPv4 dotted format (a.b.c.d)
- * @param string $cidr_network A subnet in CIDR format (a.b.c.d/n)
- *
- * @return boolean
  * @link http://stackoverflow.com/a/594134/649993
  */
-function cidrMatch($ip, $cidr_network)
+function ipInCidrSubnet($ip, $cidr_network)
 {
     list($subnet, $bits) = explode('/', $cidr_network);
-    $ip = ip2long($ip);
+    $lip = ip2long($ip);
     $subnet = ip2long($subnet);
     $mask = -1 << (32 - $bits);
     $subnet &= $mask; // nb: in case the supplied subnet wasn't correctly aligned
+    $ret = (($lip & $mask) == $subnet);
 
-    return ($ip & $mask) == $subnet;
-}
+	$class = $ret?'ok':'error';
+	printf(
+		'%s%22s(%-17s, %-20s) =&gt; <span class="%s">%s</span>',
+		"\n", 'ipInCidrSubnet', "'$ip'", "'$cidr_network'", $class, var_export($ret, 1)
+	);
 
-/**
- * Check that an IP is in a CIDR submet
- *
- * @param string $ip           An IPv4 dotted format (a.b.c.d)
- * @param string $cidr_network A subnet in CIDR format (a.b.c.d/n)
- *
- * @return boolean
- * @link http://www.php.net/manual/en/ref.network.php
- */
-function ipCidrCheck($ip, $cidr_network)
-{
-    list($net, $mask) = explode('/', $cidr_network);
-    $ip_net = ip2long($net);
-    $ip_mask = ~((1 << (32 - $mask)) - 1);
-    $ip_ip = ip2long($ip);
-    $ip_ip_net = $ip_ip & $ip_mask;
-
-    return ($ip_ip_net == $ip_net);
+	return $ret;
 }
 
 /**
@@ -162,7 +131,6 @@ function mask2cidr($mask)
 
 if (''!=$ip_ranges) {
     $ip_ranges = explode("\n", $ip_ranges);
-    $functions = array('checkNetmask', 'cidrMatch', 'ipCidrCheck');
     try {
         echo "\n\t<pre>";
         $cidr = mask2cidr($netmask);
@@ -177,9 +145,12 @@ if (''!=$ip_ranges) {
 
         forEach ($ip_ranges as $i => $ip_range) {
             $n = $i + 1;
+			$nb_errors = 0;
             $ip_range = trim($ip_range);
 
-            $minus_pos = strPos($ip_range, '-', 7);
+			echo "\n";
+
+            $minus_pos = strPos($ip_range, '-');
             $minus_count = substr_count($ip_range, '-');
             if ($minus_count>1) {
                 throw new ErrorException("$minus_count in IP range #$n!");
@@ -191,24 +162,49 @@ if (''!=$ip_ranges) {
                 list($ip1, $ip2) = explode('-', $ip_range);
             }
 
+			// Check IP syntax:
+			if (!preg_match("|$ip_pattern|", $ip1)) {
+				throw new ErrorException(
+					"In IP range #$n, IP1 is invalide: '$ip1'!"
+				);
+			}
+			if (!preg_match("|$ip_pattern|", $ip2)) {
+				throw new ErrorException(
+					"In IP range #$n, IP2 is invalide: '$ip2'!"
+				);
+			}
+
             $l1 = ip2long($ip1);
             $l2 = ip2long($ip2);
             if ($l1>$l2) {
                 throw new ErrorException("In IP range #$n, $ip1 > $ip2!");
             }
 
+            // Check that IP1 is in same subnet as the gateway:
             $cidr_network = "$ip1/$cidr";
-            echo "\n"; // \n\tcidr_network = '$cidr_network'";
+            // echo "\n"; // \n\tcidr_network = '$cidr_network'";
+            $res = ipInCidrSubnet($gateway, $cidr_network)?'ok':'NOK';
+			$nb_errors = ('ok'==$res)?$nb_errors:$nb_errors+1;
 
-            forEach ($functions as $k => $f) {
-                $res = $f($gateway, $cidr_network)?'ok':'NOK';
-                $class = ('ok'==$res)?'ok':'error';
-                printf(
-                    '%s%22s("%s", "%s") =&gt; <span class="%s">%s</span>',
-                    "\n", $f, $gateway, $cidr_network, $class, $res
-                );
+            if ($ip2!=$ip1) {
+                // Check that IP1 & IP2 are in the same subnet:
+				// echo "\n"; // \n\tcidr_network = '$cidr_network'";
+				$res = ipInCidrSubnet($ip2, $cidr_network)?'ok':'NOK';
+			    $nb_errors = ('ok'==$res)?$nb_errors:$nb_errors+1;
+
+                // Check that IP2 is in same subnet as the gateway:
+                $cidr_network = "$ip2/$cidr";
+                // echo "\n"; // \n\tcidr_network = '$cidr_network'";
+                $res = ipInCidrSubnet($gateway, $cidr_network)?'ok':'NOK';
+			    $nb_errors = ('ok'==$res)?$nb_errors:$nb_errors+1;
             }
+
+			$s = ($nb_errors>1)?'s':'';
+			$class = $nb_errors?'error':'ok';
+			echo "\n\t\t<span class=\"$class\">",
+				"Range #$n '$ip_range' has $nb_errors error$s.</span>";
         }
+
         echo "</pre>\n";
     } catch(Exception $e) {
         $msg = $e->getMessage();
