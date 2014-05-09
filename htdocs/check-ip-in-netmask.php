@@ -146,7 +146,7 @@ if (''!=$ip_ranges) {
 
         forEach ($ip_ranges as $i => $ip_range) {
             $n = $i + 1;
-            $nb_errors = 0;
+            $errors = array();
             $ip_range = trim($ip_range);
 
             echo "\n";
@@ -163,46 +163,64 @@ if (''!=$ip_ranges) {
 
             // Check IP syntax:
             if (!preg_match("|$ip_pattern|", $ip1)) {
-                throw new ErrorException(
-                    "In IP range #$n, IP1 is invalide: '$ip1'!"
-                );
+				$errors[] = "In IP range #$n, IP1 is invalide: '$ip1'!";
             }
             if (!preg_match("|$ip_pattern|", $ip2)) {
-                throw new ErrorException(
-                    "In IP range #$n, IP2 is invalide: '$ip2'!"
-                );
+                $errors[] = "In IP range #$n, IP2 is invalide: '$ip2'!";
             }
 
             $l1 = ip2long($ip1);
             $l2 = ip2long($ip2);
             if ($l1>$l2) {
-                throw new ErrorException("In IP range #$n, $ip1 > $ip2!");
+                $errors[] = "In IP range #$n, $ip1 > $ip2!";
+
+				$ipt = $ip1;
+				$ip1 = $ip2;
+				$ip2 = $ipt;
+				$l1 = ip2long($ip1);
+				$l2 = ip2long($ip2);
             }
 
             // Check that IP1 is in same subnet as the gateway:
             $cidr_network = "$ip1/$cidr";
             // echo "\n"; // \n\tcidr_network = '$cidr_network'";
             $res = ipInCidrSubnet($gateway, $cidr_network)?'ok':'NOK';
-            $nb_errors = ('ok'==$res)?$nb_errors:$nb_errors+1;
+			if ('NOK'==$res) {
+				$errors[] = "'$ip1' & '$gateway' are not in the same subnet!";
+			}
 
             if ($ip2!=$ip1) {
                 // Check that IP1 & IP2 are in the same subnet:
                 // echo "\n"; // \n\tcidr_network = '$cidr_network'";
                 $res = ipInCidrSubnet($ip2, $cidr_network)?'ok':'NOK';
-                $nb_errors = ('ok'==$res)?$nb_errors:$nb_errors+1;
+				if ('NOK'==$res) {
+					$errors[] = "'$ip1' & '$ip2' are not in the same subnet!";
+				}
 
                 // Check that IP2 is in same subnet as the gateway:
                 $cidr_network = "$ip2/$cidr";
                 // echo "\n"; // \n\tcidr_network = '$cidr_network'";
                 $res = ipInCidrSubnet($gateway, $cidr_network)?'ok':'NOK';
-                $nb_errors = ('ok'==$res)?$nb_errors:$nb_errors+1;
+				if ('NOK'==$res) {
+					$errors[] = "'$ip1' & '$gateway' are not in the same subnet!";
+				}
             }
 
+			$nb_errors = count($errors);
             $s = ($nb_errors>1)?'s':'';
             $class = $nb_errors?'error':'ok';
             echo "\n\t\t<span class=\"$class\">",
                 "Range #$n ($ip_range) has $nb_errors error$s.</span>";
         }
+
+		echo "\n";
+		for ($cidr=16; $cidr<=30; $cidr++) {
+			$mask = cidr2mask($cidr);
+			if (!($cidr%4)) {
+				echo "\n\t";
+			}
+			printf("cidr2mask(%2d) => %-15s ", $cidr, $mask);
+		}
 
         echo "</pre>\n";
     } catch(Exception $e) {
