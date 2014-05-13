@@ -5,8 +5,8 @@
  * It should be executable (chmod +x).
  *
  * Examples:
- *  $ /path/to/base64decode.php SW52aXTDqXM=
- *  $ /path/to/base64decode.php < file.b64
+ *  $ /path/to/ldif-decode.php SW52aXTDqXM=
+ *  $ /path/to/ldif-decode.php < file.ldif
  *
  * PHP version 5.3
  *
@@ -22,10 +22,10 @@
  */
 
 if (!isSet($argv)) { // if not called from command line
-    is_readable('Include/head.php') && include_once 'Include/head.php';
+    file_exists('Include/head.php') && include_once 'Include/head.php';
     $msg = 'Warning: this script is supposed to be called from the CLI!';
     echo "\t<pre>$msg</pre>", PHP_EOL;
-    is_readable('Include/tail.php') && include_once 'Include/tail.php';
+    file_exists('Include/tail.php') && include_once 'Include/tail.php';
     exit(0);
 }
 
@@ -53,7 +53,13 @@ if (isSet($argv[1])) {
 } else {
     // Filter mode: decode STDIN
     while ($input=fgets(STDIN)) {
-        echo base64_decode($input);
+        if (false!==($pos=strPos($input, $mark))) {
+            $prefix = subStr($input, 0, $pos);
+            $input  = subStr($input, $pos);
+            echo "$prefix: ", base64_decode($input), PHP_EOL;
+        } else {
+            echo $input; // EOL (end of line) is already in $input
+        }
     }
 }
 
