@@ -1,17 +1,19 @@
 <?php
 /**
+ * Compute brightness & inverse colors of a given color.
+ *
  * Last commit of this file (GMT):
  * $Id$
  *
  * PHP version 5.3
  *
  * @category  PHP
- * @package   PixShellScripts
+ * @package   PhpTests
  * @author    Julien Moreau <jmoreau@pixeye.net>
  * @copyright 2013 PixEye.net
  * @license   Affero GPL http://choosealicense.com/licenses/agpl/
  * @version   GIT: $Revision$
- * @link      https://github.com/PixEye/PixShellScripts
+ * @link      https://github.com/PixEye/php-tests
  * @since     Local time: $Date$
  * @filesource
  */

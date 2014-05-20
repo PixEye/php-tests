@@ -6,11 +6,11 @@
  * PHP version 5.2
  *
  * @category PHP
- * @package  PixShellScripts
+ * @package  PhpTests
  * @author   Julien Moreau <jmoreau@pixeye.net>
  * @license  http://choosealicense.com/licenses/no-license/ No license
  * @version  GIT: $Revision$
- * @link     https://github.com/PixEye/PixShellScripts
+ * @link     https://github.com/PixEye/php-tests
  * @since    Local time: $Date$
  * @filesource
  */

@@ -15,7 +15,7 @@
  * @author    Julien Moreau <jmoreau@pixeye.net>
  * @copyright 2013 VeePee
  * @license   http://choosealicense.com/licenses/no-license/ No license
- * @version   SVN: $Revision$
+ * @version   GIT: $Revision$
  * @link      https://github.com/PixEye/php-tests
  * @since     2013-09-30
  * @filesource
