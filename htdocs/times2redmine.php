@@ -3,10 +3,6 @@
 /**
  * This script parses my time-sheet text file & transform it to remdine time records
  *
- * Examples:
- *  $ /path/to/times2redmine.php SW52aXTDqXM=
- *  $ /path/to/times2redmine.php < file.b64
- *
  * Last commit of this file (GMT):
  * $Id$
  *
@@ -16,7 +12,7 @@
  * @package   PhpTests
  * @author    Julien Moreau <jmoreau@pixeye.net>
  * @copyright 2013 VeePee
- * @license   http://choosealicense.com/licenses/no-license/ No license
+ * @license   Affero GPL http://choosealicense.com/licenses/agpl/
  * @version   GIT: $Revision$
  * @link      https://github.com/PixEye/php-tests
  * @since     2013-09-30

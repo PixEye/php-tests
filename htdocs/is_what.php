@@ -8,7 +8,7 @@
  * @category PHP
  * @package  PhpTests
  * @author   Julien Moreau <jmoreau@pixeye.net>
- * @license  http://choosealicense.com/licenses/no-license/ No license
+ * @license  Affero GPL http://choosealicense.com/licenses/agpl/
  * @version  GIT: $Revision$
  * @link     https://github.com/PixEye/php-tests
  * @since    Local time: $Date$

@@ -17,7 +17,7 @@
  * @package   PhpTests
  * @author    Julien Moreau <jmoreau@pixeye.net>
  * @copyright 2013 VeePee
- * @license   http://choosealicense.com/licenses/no-license/ No license
+ * @license   Affero GPL http://choosealicense.com/licenses/agpl/
  * @version   GIT: $Revision$
  * @link      https://github.com/PixEye/php-tests
  * @since     2013-09-30
