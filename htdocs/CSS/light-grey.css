@@ -19,7 +19,7 @@ h6 { font-size:12px; }
 h2, h3, h4, p, div, th, td { font-family:Arial, sans-serif; }
 input, textarea { border:inset 1px #888; margin:2px 3px; padding:1px 3px; }
 /* p, div, th, td, li, input, select, option { font-size:11px; } */
-p { text-align:justify; text-indent:20px; }
+p { text-align:justify; text-indent:20px; padding:5px; }
 
 code, output, pre, tt, .monospace { font-family:monospace; font-size:12px; }
 code, pre { background:#333; color:#ffb; padding:5px 9px; margin-top:10px; display:block; }
@@ -60,7 +60,7 @@ body .rightBox { position:fixed; }
 .margin, h3, hr, p, #W3Cbuttons, .em
   { margin-left:20px; margin-right:20px; }
 li { margin-left:50px; margin-right:50px; }
-small, .discreet, #foot { font-size:10px; }
+small, .discreet, #foot, .tooltip { font-size:10px; }
 #foot { border-top:solid 1px #888; padding:0 5px; margin:0;
 	position:absolute; bottom:0; right:0;
 	background:rgba(255, 255, 255, 0.5); color:#bbb; }
@@ -93,6 +93,7 @@ form { margin-bottom:0; }
 .discreet a, .signature a, #foot a { background:transparent; color:#aaf; }
 /* .icons { position:absolute; left:300px; } */
 .signature a { background:#fff; color:#aaf; }
+.tooltip { padding:0 5px; }
 .top_marged { margin-top:50px; }
 
 /* CSS3 / HTML5 */
