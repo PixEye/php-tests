@@ -70,6 +70,21 @@ if (false===$fd) {
     die("Cannot open '$input'!".$nl);
 }
 
+/**
+ * Transform '1:12' to 1.2 for example
+ *
+ * @param string $time Example: '1:12'
+ *
+ * @return float
+ */
+function time2float ($time)
+{
+    $time = str_replace('h', ':', $time);
+    list($h, $m) = explode(':', $time);
+
+    return round($h + $m/60, 1);
+}
+
 $nb_eod_lines = 0;
 $nb_read_lines = 0;
 $nb_data_lines = 0;
@@ -95,16 +110,19 @@ while (($line = fgets($fd, 4096)) !== false) {
         continue;
     }
 
+    $line = str_replace("\t", ' ', $line);
+
     // Start of the day lines:
     if ('20'===subStr($line, 0, 2)) {
         ++$nb_lines_with_date;
 
+        unset($section, $comments, $task_id);
         $date = subStr($line, 0, 10);
 
-        $line = str_replace("\t", ' ', $line);
         $words = explode(' ', $line);
         $start_time = $words[2];
-        $prefix = "$date /$start_time/ ";
+        $start_float = time2float($start_time);
+        $prefix = "$date /$start_time ~= $start_float h| ";
 
         $line = subStr($line, 21);
         $records2add = array();
@@ -119,9 +137,14 @@ while (($line = fgets($fd, 4096)) !== false) {
     // Lunch lines:
     if (':'===subStr($line, 1, 1)) {
         ++$nb_lunch_lines;
-        $lunch_time = subStr($line, 0, 4);
-        $prefix.= "|$lunch_time| ";
+        $lunch_period = subStr($line, 0, 4);
+        $lunch_nb_h = time2float($lunch_period);
+
+        // Optional:
+        $prefix.= "|$lunch_period ~= $lunch_nb_h h| ";
         $line = ltrim(subStr($line, 5));
+        echo $prefix, $line, $nl;
+
         continue;
     }
 
@@ -131,59 +154,78 @@ while (($line = fgets($fd, 4096)) !== false) {
     if (false!==$pos) {
         $words = explode(' ', $line);
         $nb_words = count($words);
-        if (3==$nb_words && $words[1]===trim($marker)) {
+        if ($nb_words>=3 && $words[1]===trim($marker)) {
             ++$nb_eod_lines;
             $quit_time = $words[0];
-            $nb_h_in_day = $words[2];
-            if ('h'===subStr($nb_h_in_day, -1)) {
-                $nb_h_in_day = subStr($nb_h_in_day, 0, -1);
+            $nb_h_pre_computed = $words[2];
+            if ('h'===subStr($nb_h_pre_computed, -1)) {
+                $nb_h_pre_computed = subStr($nb_h_pre_computed, 0, -1);
             }
-            if (!is_numeric($nb_h_in_day)) {
+            if (!is_numeric($nb_h_pre_computed)) {
                 die("Invalid end of day line:$nl$line$nl");
             }
 
             $prefix.= "\\$quit_time\\_____ ";
-            $line = "$nb_h_in_day (h)";
+            $line = "$nb_h_pre_computed (h)";
+
+            // Compute periods in the day:
+            $nb_hours_listed = 0;
+            forEach ($lines2add as $record2add) {
+                unset($hours, $comments, $task_id);
+
+                extract($record2add); // get: $hours, $comments, $task_id, ...
+                $nb_hours_listed+= isSet($hours)?$hours:0;
+            }
+            $diff = $nb_h_pre_computed - $nb_hours_listed - $lunch_nb_h;
+            $line.= " (nbHListed=$nb_hours_listed h ; ".
+                "lunch=$lunch_nb_h h ; diff=$diff h)";
 
             // TODO: Compute redmine records:
-            $nb_hours_in_day = 0;
-            forEach ($lines2add as $record2add) {
-                unset($hours);
-                unset($issue_id);
-
-                extract($record2add); // get: $hours, $comments, $issue_id, ...
-                $nb_hours_in_day+= isSet($hours)?$hours:0;
-            }
-            $line.= " (tot=$nb_hours_in_day)";
 
             echo $prefix, $line, $nl;
             continue;
         }
     }
 
-    if ('- '!==subStr($line, 0, 2)) {
+    $first_char = subStr($line, 0, 1);
+    if ('_'===$first_char) {
+        $add2redmine = false;
+        $line = subStr($line, 1);
+    } else {
+        $add2redmine = true;
+    }
+
+    if (is_numeric(subStr($line, 0, 1))) {
+        $hours = subStr($line, 0, 3);
+        $prefix.= "[$hours h] ";
+        $line = subStr($line, 5);
+    } elseIf ('- '!==subStr($line, 0, 2)) {
         $lines2add[$nb_lines_in_day - 1]['comments'].= $line;
         continue;
     }
 
-    // Ignore useless parts:
-    if ('- Cloud :'===subStr($line, 0, 9)) {
-        $line = ltrim(subStr($line, 10));
+    $words = explode(' ', $line);
+    if (!is_numeric($words[1])) {
+        $section = $words[1]; // section can be a project or a meta-task
+        $prefix.= "{ $section } ";
+        $line = str_replace("- $section : ", '', $line);
+        $line = trim($line);
     }
 
-    echo $prefix, $line, $nl;
-
-    // Compute redmine record:
-    if (isSet($issue_id)) {
-        unset($issue_id);
+    // Parse the remain parts of the line:
+    if (isSet($task_id)) {
+        unset($task_id);
     }
     if (preg_match('|(\d+\.\d+)h\s*-\s+(.+)\s*#(\d+)|', $line, $matches)) {
-        list($hours, $comments, $issue_id) = $matches;
+        list($hours, $comments, $task_id) = $matches;
     } elseIf (preg_match('|(\d+\.\d+)h\s*-\s+(.+)|', $line, $matches)) {
         list($hours, $comments) = $matches;
     } elseIf (preg_match('|\s*-\s+(.+)|', $line, $matches)) {
         list($comments) = $matches;
+    } elseIf (isSet($section)) {
+        $comments = $line;
     } else {
+        echo $prefix, $line, $nl;
         die("Missing data for previous line!$nl");
     }
 
@@ -191,9 +233,15 @@ while (($line = fgets($fd, 4096)) !== false) {
         'hours' => $hours,
         'comments' => $comments,
     );
-    if (isSet($issue_id)) {
-        $lines2add[$nb_lines_in_day]['issue_id'] = $issue_id;
+    if (isSet($task_id)) {
+        $lines2add[$nb_lines_in_day]['task_id'] = $task_id;
     }
+
+    echo $prefix, $line, $nl;
+
+    // Compute redmine record:
+    // TODO
+
     ++$nb_lines_in_day;
     ++$nb_data_lines;
 }
