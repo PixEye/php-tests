@@ -70,8 +70,8 @@ $false = '<span class="error">FALSE</span>';
 
 $e = new Exception;
 $value_list = array(
-    'not set', null, '', '0', '10109', '6e7', 0,
-    1, -1, 1.2, -3.4, '5e', '8i', '1+1', array(), $e
+    'not set', null, '', '5e', '8i', '1+1',
+    '10109', '6e1', '0', 0, 1, -1, 1.2, -3.4, 6e1, array(), $e
 );
 
 forEach ($value_list as $title) {
@@ -80,7 +80,8 @@ forEach ($value_list as $title) {
         unset($x);
     }
     elseIf (is_string($x)) $title = "'$x'";
-    elseIf ($x===null) $title = 'NULL';
+    elseIf (null===$x) $title = 'NULL';
+    elseIf (6e1===$x) $title = '6e1(=60)';
     elseIf (is_array($x)) $title = 'array()';
     elseIf (is_object($x)) $title = 'object';
 
@@ -99,21 +100,21 @@ forEach ($value_list as $title) {
     $type = isSet($x)?getType($x):'NULL';
 
     echo "\t    <tr>",
-        "<th>$title</th>",
-        "<td>$is_nul</td>",
-        "<td>$seq_nul</td>\n\t\t",
-        "<td>$eq_nul</td>",
-        "<td>$_empty</td>\n\t\t",
-        "<td>$is_set</td>",
-        "<td>$is_scl</td>\n\t\t",
-        "<td>$is_str</td>",
-        "<td>$is_num</td>\n\t\t",
-        "<td>$is_int</td>",
-        "<td>$is_flo</td>\n\t\t",
-        "<td>$is_arr</td>",
-        "<td>$is_obj</td>\n\t\t",
-        "<td>$type</td>",
-        "<th>$title</th>",
+        "<th class=\"center\">$title</th>",
+        "<td class=\"center\">$is_nul</td>",
+        "<td class=\"center\">$seq_nul</td>\n\t\t",
+        "<td class=\"center\">$eq_nul</td>",
+        "<td class=\"center\">$_empty</td>\n\t\t",
+        "<td class=\"center\">$is_set</td>",
+        "<td class=\"center\">$is_scl</td>\n\t\t",
+        "<td class=\"center\">$is_str</td>",
+        "<td class=\"center\">$is_num</td>\n\t\t",
+        "<td class=\"center\">$is_int</td>",
+        "<td class=\"center\">$is_flo</td>\n\t\t",
+        "<td class=\"center\">$is_arr</td>",
+        "<td class=\"center\">$is_obj</td>\n\t\t",
+        "<td class=\"center\">$type</td>",
+        "<th class=\"center\">$title</th>",
         "</tr>\n";
 }
 ?>
