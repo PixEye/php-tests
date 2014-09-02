@@ -26,7 +26,7 @@ $search_dn = "ou=Users,$base_dn";
 # $filter = '(objectClass=person)';	// very simple filter
 # $filter = '(&(objectCategory=person)(objectClass=user))'; // All user objects from an AD
 $filter = '(&(objectCategory=person)(objectClass=user)(mail=*@*))';
-# $ldap_version = 3;
+$ldap_version = 3;
 # $rdn = 'me';
 # $bind_dn = "$rdn,$base_dn";
 # $pw = 'fake';
@@ -110,11 +110,11 @@ if (!$link_id) {
 
 		if (!isSet($search_dn)) $search_dn = $base_dn;
 		echo "\t<form id=\"form1\" action=\"", basename(__FILE__), "\">\n";
-		echo "\t", '<div>Searching <input type="text" name="filter" size="80" value="',
+		echo "\t  ", '<div>Searching <input type="text" name="filter" size="80" value="',
 			htmlEntities($filter), '"/>',
 			"\n\t  ", '<input type="submit" value="Apply"/>', "<br/>\n";
-		echo "\t", htmlEntities(" From '$search_dn'..."),
-			"\n\t  the result of this search is:\n\t  <output>";
+		echo "\t  ", htmlEntities("From '$search_dn'..."),
+			"\n\t  the result of this search is:\n\t  ";
 		// Search by name:
 		$time_search = microtime(true);
 		$search_result = @ldap_search($link_id, $search_dn, $filter);
@@ -122,9 +122,9 @@ if (!$link_id) {
 
 		if (false===$search_result)
 			echo "<span class=\"error\">false (NOK)!<br/>\n\t\tError: ",
-				ldap_error($link_id), "</span></output></div>\n";
+				ldap_error($link_id), "</span></div>\n";
 		else {
-			echo "$search_result</output></div>\n\n";
+			echo "$search_result</div>\n\n";
 			echo "\t<div class=\"discret\">ldap_search() took:\t",
 				$time_search, " ms.<br/><br/></div>\n";
 
@@ -326,6 +326,7 @@ if (!$link_id) {
 				echo "\t</div>\n";
 			}
 		}
+        echo "\t</form>\n";
 	}
 
 	echo "\t<br/>\n\n";

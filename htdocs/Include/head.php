@@ -30,16 +30,16 @@ $sl = '/';
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=<?php
 	echo $charset?>"<?php echo $sl?>>
-    <link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"<?php echo $sl?>>
+    <link type="image/x-icon" rel="Shortcut Icon" href="/favicon.ico"<?php echo $sl?>>
 <?php	if (!isSet($disable_css)): ?>
-    <link rel="stylesheet" type="text/css" href="<?php
+    <link type="text/css" rel="stylesheet" href="<?php
 	echo $base.$css?>" title="style at load"<?php echo $sl?>>
 <?php foreach($CSS as $key => $val) {
 	$alt_style = "$css_dir/$val.css";
 	if (file_exists($alt_style)) {
 		if (is_numeric($key)) $style_title = $val; else $style_title = $key;
 		if ($alt_style!=$css) { ?>
-    <link rel="alternate stylesheet" type="text/css" href="<?php
+    <link type="text/css" rel="alternate stylesheet" href="<?php
 	echo $base.$alt_style?>" title="<?php echo $style_title?>"<?php echo $sl?>>
 <?php		}
 	}
