@@ -23,13 +23,13 @@ include_once 'Include/head.php';
 $ldap_server = 'localhost';
 $base_dn = 'o=My Company,c=FR';
 $search_dn = "ou=Users,$base_dn";
-# $filter = '(objectClass=person)';	// very simple filter
-# $filter = '(&(objectCategory=person)(objectClass=user))'; // All user objects from an AD
+//$filter = '(objectClass=person)';	// very simple filter
+//$filter = '(&(objectCategory=person)(objectClass=user))'; // All user objects from an AD
 $filter = '(&(objectCategory=person)(objectClass=user)(mail=*@*))';
 $ldap_version = 3;
-# $rdn = 'me';
-# $bind_dn = "$rdn,$base_dn";
-# $pw = 'fake';
+//$rdn = 'me';
+//$bind_dn = "$rdn,$base_dn";
+//$pw = 'fake';
 $list_height = '330px';
 
 @include_once $config_file;	// <-- your own configuration here (overwrite previous vars)
@@ -72,7 +72,7 @@ if (!$link_id) {
 	echo "\t<h3 class=\"error\">Unable to connect to LDAP server '$ldap_server'!</h3>\n\n";
 } else {
 	$is_ok = true;
-	# $is_ok = ldap_set_option($link_id, LDAP_OPT_REFERRALS, 0);
+	//$is_ok = ldap_set_option($link_id, LDAP_OPT_REFERRALS, 0);
 	if (!$is_ok)
 		echo "\t<div class=\"error\">Unable to set option LDAP_OPT_REFERRALS to 0!</div>\n\n";
 
@@ -150,12 +150,14 @@ if (!$link_id) {
 			$count = $Entries['count'];
 			echo "\t<div>Reading entries... data for $count entries:</div>\n\n";
 
-			# echo "\t<pre>", var_export($Entries, true), "</pre>\n\n"; 	# for debug
+			//echo "\t<pre>", var_export($Entries, true), "</pre>\n\n"; 	//for debug
 
-			if ($count != $nb_results)
+			if ($count != $nb_results) {
 				echo "\t<div class=\"error\">count = $count =!= $nb_results!</div>\n";
+            }
 
-			echo "\t<blockquote style=\"height:$list_height; border:inset 1px #888; overflow:auto\">\n";
+            echo "\t<blockquote style=\"height:$list_height;";
+            echo " border:inset 1px #888; overflow:auto\">\n";
 			echo "\t<ol>\n";
 			$base_link = basename($_SERVER['PHP_SELF']);
 			$Birthdays = Array();
@@ -165,35 +167,30 @@ if (!$link_id) {
 				if (!is_array($Entry)) continue;
 				$dn = $Entry['dn'];
 				$cn = $Entry['cn'][0];
-				if (isSet($Entry['uid']))
-					$login = $Entry['uid'][0];
-				else
-					$login = $Entry['cn'][0];
-				if (isSet($Entry['o'])) $org = $Entry['o'][0]; else $org = '';
-				if (!isSet($Entry['givenname'])) $givenname = ''; else
-				$givenname = ucWords(strToLower($Entry['givenname'][0]));
-				if (isSet($Entry['sn']))
-					$familyname = ucWords(strToLower($Entry['sn'][0]));
-				else
-					$familyname = '';
-				$french_name = "$givenname $familyname";
+                $login = isSet($Entry['uid'])?$Entry['uid'][0]:$Entry['cn'][0];
+                $org = isSet($Entry['o'])?$Entry['o'][0]:'';
+				$display_name = isSet($Entry['displayname'])?$Entry['displayname'][0]:'';
+                /*
+				 $given_name = isSet($Entry['givenname'])?$Entry['givenname'][0]:'';
+                $family_name = isSet($Entry['sn'])?$Entry['sn'][0]:'';
+                 */
+                $email = isSet($Entry['mail'])?$Entry['mail'][0]:'';
+                $creation_date = isSet($Entry['whencreated'])?
+                    DateTime::createFromFormat(
+                        'YmdGis', subStr($Entry['whencreated'][0], 0, 14)
+                    ):null;
+                $creation_date = is_object($creation_date)?
+                    $creation_date->format('Y-m-d'):'';
 
-				if (isSet($Entry['mail']))
-					$email = $Entry['mail'][0];
-				else $email = '';
-
-				if (!isSet($Entry['oxuserinstantmessenger'])) $im1 = ''; else
-				$im1 = first_word($Entry['oxuserinstantmessenger'][0]);
-				if (!isSet($Entry['oxuserinstantmessenger2'])) $im2 = ''; else
-				$im2 = first_word($Entry['oxuserinstantmessenger2'][0]);
+                if (!isSet($Entry['oxuserinstantmessenger'])) $im1 = '';
+                else $im1 = first_word($Entry['oxuserinstantmessenger'][0]);
+                if (!isSet($Entry['oxuserinstantmessenger2'])) $im2 = '';
+                else $im2 = first_word($Entry['oxuserinstantmessenger2'][0]);
 
 				// Phones:
-				if (!isSet($Entry['telephonenumber'])) $tel = ''; else
-				$tel = $Entry['telephonenumber'][0];
-				if (!isSet($Entry['mobile'])) $mobile = ''; else
-				$mobile = $Entry['mobile'][0];
-				if (!isSet($Entry['ipphone'])) $ipphone = ''; else
-				$ipphone = $Entry['ipphone'][0];
+				$tel = isSet($Entry['telephonenumber'])?$Entry['telephonenumber'][0]:'';
+				$mobile = isSet($Entry['mobile'])?$Entry['mobile'][0]:'';
+				$ipphone = isSet($Entry['ipphone'])?$Entry['ipphone'][0]:'';
 
 				if (!isSet($Entry['birthday'])) $birthday = ''; else {
 					$birthday = $Entry['birthday'][0];
@@ -204,13 +201,13 @@ if (!$link_id) {
 						$birthmonth = substr($birthday, 5, 2);
 						if ($birthmonth==$current_month) {
 							if ($birthday_day==$current_day)
-								$Birthdays[] = "<a href=\"mailto:$email\">$french_name</a>".
+								$Birthdays[] = "<a href=\"mailto:$email\">$display_name</a>".
 									" <span class=\"surligne\">(the $birthday_day/".
 									"$birthmonth/$birthyear&nbsp;- $age ans)</span>";
-							else	$Birthdays[] = "<a href=\"mailto:$email\">$french_name</a> ".
+							else	$Birthdays[] = "<a href=\"mailto:$email\">$display_name</a> ".
 									"(the $birthday_day/$birthmonth/$birthyear&nbsp;- $age ans)";
 						} elseif ($birthmonth==$next_month)
-							$NextBirthdays[] = "<a href=\"mailto:$email\">$french_name</a>".
+							$NextBirthdays[] = "<a href=\"mailto:$email\">$display_name</a>".
 								" (the $birthday_day/$birthmonth/$birthyear&nbsp;- $age ans)";
 					}
 				}
@@ -271,7 +268,7 @@ if (!$link_id) {
 					elseIf (isSet($Entry['usercountry']))
 						$address.= ', '.$Entry['usercountry'][0];
 
-					$enc_addr = urlEncode("$address ($french_name [$org])");
+					$enc_addr = urlEncode("$address ($display_name [$org])");
 					echo "\n\t\t<a title=\"See map of: $address\"".
 						" href=\"http://maps.google.fr/maps?f=q&amp;hl=fr&amp;q=$enc_addr\"".
 						"><img\n\t\t alt=\"Address: $address\" src=\"Images/map.gif\"$sl></a>";
@@ -281,11 +278,12 @@ if (!$link_id) {
 
 				echo '</span>';
 
-				# $link = "$base_link?uid=".urlEncode($login);
+				//$link = "$base_link?uid=".urlEncode($login);
 				$link = "$base_link?dn=".urlEncode($dn);
-				# $link = "$base_link?cn=".urlEncode($cn);
-				$french_name = utf8_encode($french_name);
-				echo "\n\t\t<a href=\"$link\">$french_name</a>";	# ($login @ $org)";
+				//$link = "$base_link?cn=".urlEncode($cn);
+                echo "\n\t\t<acronym title=\"Date de création\">$creation_date</acronym>";
+                echo "\n\t\t<a href=\"$link\">$display_name</a>";
+                // you may add: ($login @ $org)";
 
 				if (1 == $count) {
 					$Resume = array();
@@ -295,8 +293,7 @@ if (!$link_id) {
 								if (isSet($v['count'])) unset($v['count']);
 								$v = implode(', ', $v);
 							}
-							if (ctype_print($v))
-								$Resume[$k] = utf8_encode($v);
+                            $Resume[$k] = ctype_print($v)?utf8_encode($v):$v;
 						}
 					ksort($Resume);
 					echo "\n\n\t<pre>Resume = ";
@@ -339,4 +336,5 @@ if (!$link_id) {
 }
 
 include_once 'Include/tail.php';
-# vim: shiftwidth=4 tabstop=4
+
+// vim: shiftwidth=4 tabstop=4

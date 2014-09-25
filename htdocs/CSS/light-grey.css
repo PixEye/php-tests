@@ -21,6 +21,9 @@ input, textarea { border:inset 1px #888; margin:2px 3px; padding:1px 3px; }
 /* p, div, th, td, li, input, select, option { font-size:11px; } */
 p { text-align:justify; text-indent:20px; padding:5px; }
 
+acronym, abbr { cursor:help; border-bottom:dotted 1px; }
+form { margin-bottom:0; }
+
 code, output, pre, tt, .monospace { font-family:monospace; font-size:12px; }
 code, pre { background:#333; color:#ffb; padding:5px 9px; margin-top:10px; display:block; }
 code .discreet, pre .discreet { background:#000; color:#888; }
@@ -71,9 +74,6 @@ body #foot { position:fixed; }
 STRONG, .rv, .title { padding:0 3px; }
 .rv, .title { background:#000; color:#fff; padding:1px 3px; }
 .title { margin-bottom:15px; }
-
-acronym, abbr { cursor:help; }
-form { margin-bottom:0; }
 
 .surligne, .local { background:#ff0; color:#000; }
 .discret { background:#fff; color:#888; }
