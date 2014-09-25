@@ -247,7 +247,7 @@ if (!$link_id) {
                 echo "\n\t    <td class=\"center\"><a href=\"$link\">$given_name</a></td>";
                 echo "\n\t    <td class=\"center\"><a href=\"$link\">$family_name</a></td>";
                 echo "\n\t    <td class=\"right\"><a href=\"mailto:$email\">$email</a></td>";
-                echo "\n\t    <td class=\"center\"><a href=\"tel:$email\">$tel</a></td>";
+                echo "\n\t    <td class=\"center\"><a href=\"tel:$tel\">$tel</a></td>";
                 echo "\n\t    <td><small>$creation_date</small></td>";
 				if (isSet($Entry['mailenabled']) && $Entry['mailenabled'][0]!='OK')
 					echo "\n\t    <td class=\"gone\"><span class=\"icons\"><img".
