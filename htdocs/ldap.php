@@ -7,26 +7,9 @@
  * Last commit of this file: $Id$
  */
 
+// Basic configuration:
 $config_file = 'Include/ldap-config.php'; // File where you put your own LDAP config
 
-$charset = 'UTF-8';
-$title = '<abbr title="Lightweight Directory Access Protocol">LDAP</abbr>&nbsp;/ PHP request';
-$head_addon = '';
-
-$dialer_lib = 'js/webdialer.js';
-if (file_exists($dialer_lib)) {
-	$head_addon.= "<script type=\"text/javascript\" src=\"$dialer_lib\"></script>\n";
-}
-
-$sort_table_lib = 'js/sorttable.js';
-if (file_exists($sort_table_lib)) {
-	$head_addon.= "<script type=\"text/javascript\" src=\"$sort_table_lib\"></script>\n";
-}
-
-$body_addon = ' onload="document.getElementById(\'form1\').reset()"';
-include_once 'Include/head.php';
-
-// Basic configuration:
 $ldap_server = 'localhost';
 $base_dn = 'o=My Company,c=FR';
 $search_dn = "ou=Users,$base_dn";
@@ -40,6 +23,23 @@ $ldap_version = 3;
 $list_height = '330px';
 
 @include_once $config_file;	// <-- your own configuration here (overwrite previous vars)
+
+$charset = 'UTF-8';
+$title = '<abbr title="Lightweight Directory Access Protocol">LDAP</abbr>&nbsp;/ PHP request';
+$head_addon = '';
+
+$dialer_lib = 'Include/webdialer.js';
+if (file_exists($dialer_lib)) {
+	$head_addon.= "<script type=\"text/javascript\" src=\"$dialer_lib\"></script>\n";
+}
+
+$sort_table_lib = 'Include/sorttable.js';
+if (file_exists($sort_table_lib)) {
+	$head_addon.= "<script type=\"text/javascript\" src=\"$sort_table_lib\"></script>\n";
+}
+
+$body_addon = ' onload="document.getElementById(\'form1\').reset()"';
+include_once 'Include/head.php';
 
 if (isSet($_REQUEST['filter']) && trim($_REQUEST['filter'])!='') $filter = $_REQUEST['filter'];
 if (isSet($_REQUEST['uid']) && trim($_REQUEST['uid'])!='') $filter = '(uid='.$_REQUEST['uid'].')';
@@ -243,11 +243,12 @@ if (!$link_id) {
 				//$link = "$base_link?cn=".urlEncode($cn);
                 // you may add: ($login @ $org)";
 
+                $htel = str_replace(' ', '', $tel);
                 echo "\n\t  <tr>";
                 echo "\n\t    <td class=\"center\"><a href=\"$link\">$given_name</a></td>";
                 echo "\n\t    <td class=\"center\"><a href=\"$link\">$family_name</a></td>";
                 echo "\n\t    <td class=\"right\"><a href=\"mailto:$email\">$email</a></td>";
-                echo "\n\t    <td class=\"center\"><a href=\"tel:$tel\">$tel</a></td>";
+                echo "\n\t    <td class=\"center\"><a href=\"tel:$htel\">$tel</a></td>";
                 echo "\n\t    <td><small>$creation_date</small></td>";
 				if (isSet($Entry['mailenabled']) && $Entry['mailenabled'][0]!='OK')
 					echo "\n\t    <td class=\"gone\"><span class=\"icons\"><img".
@@ -259,18 +260,18 @@ if (!$link_id) {
 						" title=\"Send an email to: $email\"><img".
 						"\n\t\t alt=\"Email: $email\" src=\"Images/mail.gif\"$sl></a>";
 
-				if (trim($tel)!='') echo "\n\t\t<a href=\"#\"".
-					" title=\"Call: $tel\" onclick=\"return launchWebDialerServlet('$tel')\"><img\n".
+				if (trim($tel)!='') echo "\n\t\t<a ".
+					"href=\"javascript:launchWebDialerServlet('$tel')\" title=\"Call: $tel\"><img\n".
 					"\t\t alt=\"phone\" src=\"Images/telephone.png\"$sl></a>";
 				else echo "\n\t\t<img alt=\"Phone NA\" title=\"Phone number NA\" src=\"Images/telephone-grey.png\"$sl>";
 
-				if (trim($mobile)!='') echo "\n\t\t<a href=\"#\"".
-					" title=\"Call: $mobile\" onclick=\"return launchWebDialerServlet('$mobile')\"><img\n".
+				if (trim($mobile)!='') echo "\n\t\t<a ".
+					"href=\"javascript:launchWebDialerServlet('$mobile')\" title=\"Call: $mobile\"><img\n".
 					"\t\t alt=\"mobile phone\" src=\"Images/mobile.gif\"$sl></a>";
 				else echo "\n\t\t<img alt=\"Mobile phone NA\" title=\"Mobile number NA\" src=\"Images/mobile-grey.gif\"$sl>";
 
-				if (trim($ipphone)!='') echo "\n\t\t<a href=\"#\"".
-					" title=\"Call: $ipphone\" onclick=\"return launchWebDialerServlet('$ipphone')\"><img\n".
+				if (trim($ipphone)!='') echo "\n\t\t<a ".
+					"href=\"javascript:launchWebDialerServlet('$ipphone')\" title=\"Call: $ipphone\"><img\n".
 					"\t\t alt=\"IP phone\" src=\"Images/ip-phone.png\"$sl></a>";
 				else echo "\n\t\t<img alt=\"IP phone NA\" title=\"IP phone number NA\" src=\"Images/ip-phone-grey.png\"$sl>";
 
@@ -327,7 +328,13 @@ if (!$link_id) {
                             $Resume[$k] = ctype_print($v)?utf8_encode($v):$v;
 						}
 					ksort($Resume);
-					echo "\n\n\t<pre>Resume = ";
+					echo "\n\n\t<pre style=\"height:$list_height; max-width:600px;";
+                    echo " border:inset 1px #888; overflow:auto\">Resume = ";
+                    forEach ($Resume as $k => $v) {
+                        if (!mb_check_encoding($v, 'UTF-8')) {
+                            $Resume[$k] = base64_encode($v);
+                        }
+                    }
 					var_export($Resume);
 					echo "</pre>\n";
 				}

@@ -28,7 +28,7 @@ code, output, pre, tt, .monospace { font-family:monospace; font-size:12px; }
 code, pre { background:#333; color:#ffb; padding:5px 9px; margin-top:10px; display:block; }
 code .discreet, pre .discreet { background:#000; color:#888; }
 code a, pre a { background:#333; color:#88f; }
-code, pre , textarea { overflow:auto; }
+code, pre, textarea { overflow:auto; }
 
 img { border:0; }
 a { text-decoration:none; font-weight:bold; }
@@ -66,7 +66,7 @@ body .rightBox { position:fixed; }
 .margin, h3, hr, p, #W3Cbuttons, .em
   { margin-left:20px; margin-right:20px; }
 li { margin-left:50px; margin-right:50px; }
-small, .discreet, #foot, .tooltip { font-size:10px; }
+small, .discret, .discreet, #foot, .tooltip { font-size:10px; }
 #foot { border-top:solid 1px #888; padding:0 5px; margin:0;
 	position:absolute; bottom:0; right:0;
 	background:rgba(255, 255, 255, 0.5); color:#bbb; }
