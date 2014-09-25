@@ -154,18 +154,20 @@ if (!$link_id) {
 			$get_data_time = round(1000*(microtime(true) - $get_data_time));
 			echo "\t<div class=\"discret\"><br/>ldap_get_entries(link_id, Result) took:\t",
 				$get_data_time, " ms.</div>\n";
-			$count = $Entries['count'];
-			echo "\t<div>Reading entries... data for $count entries:</div>\n\n";
+			$nb_entries = $Entries['count'];
+			echo "\t<div>Reading entries... data for $nb_entries entries:</div>\n\n";
 
 			//echo "\t<pre>", var_export($Entries, true), "</pre>\n\n"; 	//for debug
 
-			if ($count != $nb_results) {
-				echo "\t<div class=\"error\">count = $count =!= $nb_results!</div>\n";
+			if ($nb_entries != $nb_results) {
+				echo "\t<div class=\"error\">count = $nb_entries =!= $nb_results!</div>\n";
             }
 
             echo "\t<table class=\"nice centered sortable grid\">\n";
 			echo "\t  <thead>\n";
 			echo "\t    <tr>\n";
+			echo "\t      <th>#</th>\n";
+			echo "\t      <th>Type</th>\n";
 			echo "\t      <th>Prénom</th>\n";
 			echo "\t      <th>Nom</th>\n";
 			echo "\t      <th>Email</th>\n";
@@ -176,6 +178,8 @@ if (!$link_id) {
 			echo "\t  </thead>\n";
 			echo "\t  <tfoot>\n";
 			echo "\t    <tr>\n";
+			echo "\t      <th>#</th>\n";
+			echo "\t      <th>Type</th>\n";
 			echo "\t      <th>Prénom</th>\n";
 			echo "\t      <th>Nom</th>\n";
 			echo "\t      <th>Email</th>\n";
@@ -188,18 +192,21 @@ if (!$link_id) {
 			$base_link = basename($_SERVER['PHP_SELF']);
 			$Birthdays = Array();
 			$NextBirthdays = Array();
-			forEach($Entries as $Entry)
+			forEach($Entries as $i => $Entry)
 			{
 				if (!is_array($Entry)) continue;
 
 				$dn = $Entry['dn'];
 				$cn = $Entry['cn'][0];
                 $org = isSet($Entry['o'])?$Entry['o'][0]:'';
+                $count = isSet($Entry['count'])?$Entry['count']:'';
+                $email = isSet($Entry['mail'])?$Entry['mail'][0]:'';
                 $login = isSet($Entry['uid'])?$Entry['uid'][0]:$Entry['cn'][0];
+                $admin = isSet($Entry['admincount'])?$Entry['admincount'][0]:'';
+
 				  $given_name = isSet($Entry['givenname'])?$Entry['givenname'][0]:'';
                  $family_name = isSet($Entry['sn'])?$Entry['sn'][0]:'';
 				$display_name = isSet($Entry['displayname'])?$Entry['displayname'][0]:'';
-                $email = isSet($Entry['mail'])?$Entry['mail'][0]:'';
 
                 $creation_date = isSet($Entry['whencreated'])?
                     DateTime::createFromFormat(
@@ -243,13 +250,16 @@ if (!$link_id) {
 				//$link = "$base_link?cn=".urlEncode($cn);
                 // you may add: ($login @ $org)";
 
+                $n = $i + 1;
                 $htel = str_replace(' ', '', $tel);
                 echo "\n\t  <tr>";
+                echo "\n\t    <td class=\"numeric\">$n</td>";
+                echo "\n\t    <td class=\"center\">".($admin?'ADMIN':'user').'</td>';
                 echo "\n\t    <td class=\"center\"><a href=\"$link\">$given_name</a></td>";
                 echo "\n\t    <td class=\"center\"><a href=\"$link\">$family_name</a></td>";
                 echo "\n\t    <td class=\"right\"><a href=\"mailto:$email\">$email</a></td>";
                 echo "\n\t    <td class=\"center\"><a href=\"tel:$htel\">$tel</a></td>";
-                echo "\n\t    <td><small>$creation_date</small></td>";
+                echo "\n\t    <td class=\"center\"><small>$creation_date</small></td>";
 				if (isSet($Entry['mailenabled']) && $Entry['mailenabled'][0]!='OK')
 					echo "\n\t    <td class=\"gone\"><span class=\"icons\"><img".
 						" alt=\"Email disabled: $email\"".
@@ -317,7 +327,7 @@ if (!$link_id) {
                 }
 				echo '</span>';
 
-				if (1 == $count) {
+				if (1 == $nb_entries) {
 					$Resume = array();
 					forEach($Entry as $k => $v)
 						if (!is_numeric($k)) {
@@ -328,7 +338,7 @@ if (!$link_id) {
                             $Resume[$k] = ctype_print($v)?utf8_encode($v):$v;
 						}
 					ksort($Resume);
-					echo "\n\n\t<pre style=\"height:$list_height; max-width:600px;";
+					echo "\n\n\t<pre style=\"height:$list_height; max-width:580px;";
                     echo " border:inset 1px #888; overflow:auto\">Resume = ";
                     forEach ($Resume as $k => $v) {
                         if (!mb_check_encoding($v, 'UTF-8')) {
