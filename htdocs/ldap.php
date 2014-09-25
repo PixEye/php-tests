@@ -11,10 +11,17 @@ $config_file = 'Include/ldap-config.php'; // File where you put your own LDAP co
 
 $charset = 'UTF-8';
 $title = '<abbr title="Lightweight Directory Access Protocol">LDAP</abbr>&nbsp;/ PHP request';
+$head_addon = '';
 
-$dialer_lib = 'Include/webdialer.js';
-if (file_exists($dialer_lib))
-	$head_addon = "<script type=\"text/javascript\" src=\"$dialer_lib\"></script>";
+$dialer_lib = 'js/webdialer.js';
+if (file_exists($dialer_lib)) {
+	$head_addon.= "<script type=\"text/javascript\" src=\"$dialer_lib\"></script>\n";
+}
+
+$sort_table_lib = 'js/sorttable.js';
+if (file_exists($sort_table_lib)) {
+	$head_addon.= "<script type=\"text/javascript\" src=\"$sort_table_lib\"></script>\n";
+}
 
 $body_addon = ' onload="document.getElementById(\'form1\').reset()"';
 include_once 'Include/head.php';
@@ -156,31 +163,50 @@ if (!$link_id) {
 				echo "\t<div class=\"error\">count = $count =!= $nb_results!</div>\n";
             }
 
-            echo "\t<blockquote style=\"height:$list_height;";
-            echo " border:inset 1px #888; overflow:auto\">\n";
-			echo "\t<ol>\n";
+            echo "\t<table class=\"nice centered sortable grid\">\n";
+			echo "\t  <thead>\n";
+			echo "\t    <tr>\n";
+			echo "\t      <th>Prénom</th>\n";
+			echo "\t      <th>Nom</th>\n";
+			echo "\t      <th>Email</th>\n";
+			echo "\t      <th>Téléphone</th>\n";
+			echo "\t      <th>Création</th>\n";
+			echo "\t      <th>Extra</th>\n";
+			echo "\t    </tr>\n";
+			echo "\t  </thead>\n";
+			echo "\t  <tfoot>\n";
+			echo "\t    <tr>\n";
+			echo "\t      <th>Prénom</th>\n";
+			echo "\t      <th>Nom</th>\n";
+			echo "\t      <th>Email</th>\n";
+			echo "\t      <th>Téléphone</th>\n";
+			echo "\t      <th>Création</th>\n";
+			echo "\t      <th>Extra</th>\n";
+			echo "\t    </tr>\n";
+			echo "\t  </tfoot>\n";
+			echo "\t  <tbody>\n";
 			$base_link = basename($_SERVER['PHP_SELF']);
 			$Birthdays = Array();
 			$NextBirthdays = Array();
 			forEach($Entries as $Entry)
 			{
 				if (!is_array($Entry)) continue;
+
 				$dn = $Entry['dn'];
 				$cn = $Entry['cn'][0];
-                $login = isSet($Entry['uid'])?$Entry['uid'][0]:$Entry['cn'][0];
                 $org = isSet($Entry['o'])?$Entry['o'][0]:'';
+                $login = isSet($Entry['uid'])?$Entry['uid'][0]:$Entry['cn'][0];
+				  $given_name = isSet($Entry['givenname'])?$Entry['givenname'][0]:'';
+                 $family_name = isSet($Entry['sn'])?$Entry['sn'][0]:'';
 				$display_name = isSet($Entry['displayname'])?$Entry['displayname'][0]:'';
-                /*
-				 $given_name = isSet($Entry['givenname'])?$Entry['givenname'][0]:'';
-                $family_name = isSet($Entry['sn'])?$Entry['sn'][0]:'';
-                 */
                 $email = isSet($Entry['mail'])?$Entry['mail'][0]:'';
+
                 $creation_date = isSet($Entry['whencreated'])?
                     DateTime::createFromFormat(
                         'YmdGis', subStr($Entry['whencreated'][0], 0, 14)
                     ):null;
                 $creation_date = is_object($creation_date)?
-                    $creation_date->format('Y-m-d'):'';
+                    $creation_date->format('Y-m-d H:i:s'):'';
 
                 if (!isSet($Entry['oxuserinstantmessenger'])) $im1 = '';
                 else $im1 = first_word($Entry['oxuserinstantmessenger'][0]);
@@ -212,13 +238,24 @@ if (!$link_id) {
 					}
 				}
 
+				//$link = "$base_link?uid=".urlEncode($login);
+				$link = "$base_link?dn=".urlEncode($dn);
+				//$link = "$base_link?cn=".urlEncode($cn);
+                // you may add: ($login @ $org)";
+
+                echo "\n\t  <tr>";
+                echo "\n\t    <td class=\"center\"><a href=\"$link\">$given_name</a></td>";
+                echo "\n\t    <td class=\"center\"><a href=\"$link\">$family_name</a></td>";
+                echo "\n\t    <td class=\"right\"><a href=\"mailto:$email\">$email</a></td>";
+                echo "\n\t    <td class=\"center\"><a href=\"tel:$email\">$tel</a></td>";
+                echo "\n\t    <td><small>$creation_date</small></td>";
 				if (isSet($Entry['mailenabled']) && $Entry['mailenabled'][0]!='OK')
-					echo "\n\t  <li class=\"gone\"><span class=\"icons\"><img".
+					echo "\n\t    <td class=\"gone\"><span class=\"icons\"><img".
 						" alt=\"Email disabled: $email\"".
 						" title=\"Email disabled: $email\"".
 						" src=\"Images/mail-grey.gif\"$sl>";
 				else
-					echo "\n\t  <li><span class=\"icons\"><a href=\"mailto:$email\"".
+					echo "\n\t    <td><span class=\"icons\"><a href=\"mailto:$email\"".
 						" title=\"Send an email to: $email\"><img".
 						"\n\t\t alt=\"Email: $email\" src=\"Images/mail.gif\"$sl></a>";
 
@@ -272,18 +309,12 @@ if (!$link_id) {
 					echo "\n\t\t<a title=\"See map of: $address\"".
 						" href=\"http://maps.google.fr/maps?f=q&amp;hl=fr&amp;q=$enc_addr\"".
 						"><img\n\t\t alt=\"Address: $address\" src=\"Images/map.gif\"$sl></a>";
-				} else	echo "\n\t\t<img alt=\"Address not available\"".
+                } else {
+                    echo "\n\t\t<img alt=\"Address not available\"".
 						" title=\"Address not available\"".
 						" src=\"Images/map-grey.gif\"$sl>";
-
+                }
 				echo '</span>';
-
-				//$link = "$base_link?uid=".urlEncode($login);
-				$link = "$base_link?dn=".urlEncode($dn);
-				//$link = "$base_link?cn=".urlEncode($cn);
-                echo "\n\t\t<acronym title=\"Date de création\">$creation_date</acronym>";
-                echo "\n\t\t<a href=\"$link\">$display_name</a>";
-                // you may add: ($login @ $org)";
 
 				if (1 == $count) {
 					$Resume = array();
@@ -300,10 +331,10 @@ if (!$link_id) {
 					var_export($Resume);
 					echo "</pre>\n";
 				}
-				echo "</li>\n";
+				echo "</td></tr>\n";
 			} // endForEach
-			echo "\t</ol>\n";
-			echo "\t</blockquote>\n";
+			echo "\t  </tbody>\n";
+			echo "\t</table>\n";
 
 			$nb_birthday = count($Birthdays);
 			$nb_next_birthday = count($NextBirthdays);

@@ -40,6 +40,8 @@ a:hover { background:#fff; color:#008; text-decoration:underline; }
 #source { margin-bottom:16px; }
 
 table { border-collapse:collapse; }
+table.sortable thead { cursor:s-resize; }
+table.sortable tfoot { cursor:n-resize; }
 th { text-align:center; }
 tbody>tr>th { text-align:right; }
 th, td { padding:2px 4px; }
@@ -48,7 +50,8 @@ td { text-align:left; }
 label { padding:3px; }
 
 big, .big { font-size:14px; }
-.center { text-align:center; margin:0 auto;; }
+.center { text-align:center; }
+.centered { text-align:center; margin:0 auto; }
 table.grid th, table.grid td { border:solid 1px #ddd; margin:0; padding:5px; }
 .right, .number, #foot { text-align:right; }
 .left { text-align:left; }
