@@ -1,7 +1,7 @@
 <?php
 /**
  * Last commit of this file (GMT):
- * $Id: 849e5f33f21126672c44669bc25309893ac6b5b2 $
+ * $Id$
  *
  * @category  PHP
  * @package   PhpTests
