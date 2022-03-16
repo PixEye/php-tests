@@ -1,6 +1,5 @@
 <?php
-/**
- * This script parses my time-sheet text file & transform it to remdine time records
+/** This script parses my time-sheet text file & transform it to remdine time records
  *
  * Last commit of this file (GMT):
  * $Id$
@@ -10,7 +9,7 @@
  * @category  PHP
  * @package   PhpTests
  * @author    Julien Moreau <jmoreau@pixeye.net>
- * @copyright 2013 VeePee
+ * @copyright 2013
  * @license   Affero GPL http://choosealicense.com/licenses/agpl/
  * @version   GIT: $Revision$
  * @link      https://github.com/PixEye/php-tests
@@ -40,8 +39,7 @@
  * 13 rows in set
  */
 
-/**
- * RedmineTimeEntry
+/** RedmineTimeEntry
  *
  * @category PHP
  * @package  PhpTests
@@ -51,76 +49,74 @@
  */
 class RedmineTimeEntry
 {
-    /**
-     * Data as an array
-     */
-    protected $data;
+	/** Data as an array
+	 */
+	protected $data;
 
-    /**
-     * Constructor
-     *
-     * @param string $spent_on    Date as: YYYY-MM-DD
-     * @param float  $hours       Nb hours
-     * @param int    $issue_id    Issue ID
-     * @param int    $activity_id Activity ID
-     * @param string $comments    Some comments (optional)
-     *
-     * @return RedmineTimeEntry
-     */
-    public function __construct(
-        $spent_on, $hours, $issue_id, $activity_id=0, $comments=''
-    ) {
-        $keys = self::getKeys();
+	/** Constructor
+	 *
+	 * @param string $spent_on    Date as: YYYY-MM-DD
+	 * @param float  $hours       Nb hours
+	 * @param int    $issue_id    Issue ID
+	 * @param int    $activity_id Activity ID
+	 * @param string $comments    Some comments (optional)
+	 *
+	 * @return RedmineTimeEntry
+	 */
+	public function __construct(
+		$spent_on, $hours, $issue_id, $activity_id=0, $comments=''
+	) {
+		$keys = self::getKeys();
 
-        $tyear  = subStr($spent_on, 0, 4);
-        $tmonth = subStr($spent_on, 5, 2);
-        $tweek  = date('W', strToTime($spent_on));
+		$tyear  = subStr($spent_on, 0, 4);
+		$tmonth = subStr($spent_on, 5, 2);
+		$tweek  = date('W', strToTime($spent_on));
 
-        $created_on = $updated_on = strFTime('%F %T');
+		$created_on = $updated_on = strFTime('%F %T');
 
-        forEach ($keys as $k) {
-            $this->data[$k] = isSet($$k)?$$k:null;
-        }
+		forEach ($keys as $k) {
+			$this->data[$k] = isSet($$k)?$$k:null;
+		}
+	}
 
-        return $this;
-    }
+	/**
+	 * Magic method that...
+	 *
+	 * @return string
+	 */
+	public function __toString()
+	{
+		return sprintf(
+			'%s #%4d %.1fh %s',
+			$this->data['spent_on'],
+			$this->data['issue_id'],
+			$this->data['hours'],
+			$this->data['comments']
+		);
+	}
 
-    /**
-     * Magic method that...
-     *
-     * @return string
-     */
-    public function __toString()
-    {
-        return sprintf(
-            '%s #%4d %.1fh %s',
-            $this->data['spent_on'],
-            $this->data['issue_id'],
-            $this->data['hours'],
-            $this->data['comments']
-        );
-    }
-
-    /**
-     * Constructor
-     *
-     * @return array
-     */
-    static public function getKeys()
-    {
-        return array(
-            'project_id',
-            'user_id',
-            'issue_id',     // (required)
-            'hours',        // float (required)
-            'comments',     // varchar(255) (important)
-            'activity_id',  // (required)
-            'spent_on',     // date (required)
-            'tyear',
-            'tmonth',
-            'tweek',
-            'created_on',   // datetime
-            'updated_on',   // datetime
-        );
-    }
+	/**
+	 * Constructor
+	 *
+	 * @return array
+	 */
+	static public function getKeys()
+	{
+		return array(
+			'project_id',
+			'user_id',
+			'issue_id',     // (required)
+			'hours',        // float (required)
+			'comments',     // varchar(255) (important)
+			'activity_id',  // (required)
+			'spent_on',     // date (required)
+			'tyear',
+			'tmonth',
+			'tweek',
+			'created_on',   // datetime
+			'updated_on',   // datetime
+		);
+	}
 }
+
+// vim: noexpandtab
